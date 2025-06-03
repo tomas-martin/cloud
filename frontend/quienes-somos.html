@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quienes Somos</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .header {
+            background-color: #4c74af;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .about-us {
+            margin: 20px 0;
+        }
+        .about-us img {
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #4c74af;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .gallery-container {
+            position: relative;
+            max-width: 700px;
+            margin: auto;
+        }
+        .gallery-slide {
+            display: none;
+        }
+        .gallery-slide img {
+            width: 100%;
+            height: auto;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: rgb(26, 63, 184);
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+        .about-us h2 {
+            font-size: 3.2em;  /* Aumentado de 2.8em */
+            margin-bottom: 35px;
+            color: #4c74af;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .about-us p {
+            font-size: 1.8em;  /* Aumentado de 1.6em */
+            line-height: 1.8;
+            margin: 30px 0;
+            text-align: justify;
+            padding: 0 40px;
+            color: #444;
+        }
+        .gallery-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Agregar pestañas horizontales -->
+    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'">Inicio</button>
+    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
+    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
+    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
+    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
+    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+    </div>
+    
+    <div class="header">
+        <h1>Quienes Somos</h1>
+    </div>
+    
+    <div class="content">
+        <div class="about-us">
+            <h2>Nuestra Veterinaria</h2>
+            <p>En nuestra veterinaria, nos dedicamos al cuidado y bienestar de tus mascotas. Nuestro equipo de profesionales altamente capacitados y nuestra tecnología de punta nos permiten ofrecer el mejor servicio posible.</p>
+            <div class="gallery-container">
+                <div class="gallery-slide">
+                    <img src="https://static.misionesonline.news/wp-content/uploads/2024/07/descarga.jpg" alt="Veterinaria 1">
+                </div>
+                <div class="gallery-slide">
+                    <img src="https://cloudfront-us-east-1.images.arcpublishing.com/infobae/L6GI2ZSXFZGADESR57UO666ZE4.jpg" alt="Veterinaria 2">
+                </div>
+                <div class="gallery-slide">
+                    <img src="https://okvet.co/wp-content/uploads/2020/06/que-es-una-veterinaria.jpg" alt="Veterinaria 3">
+                </div>
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Veterinaria San Roque.</p>
+    </div>
+    <script>
+        let slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("gallery-slide");
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slides[slideIndex-1].style.display = "block";
+        }
+    </script>
+</body>
+</html>

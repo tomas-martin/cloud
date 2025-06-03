@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestros Servicios</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .header {
+            background-color: #4c74af;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            width: 300px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+        .card h3 {
+            margin: 10px 0;
+            color: #4c74af;
+        }
+        .card p {
+            padding: 0 20px;
+            color: #666;
+        }
+        .footer {
+            background-color: #4c74af;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Agregar pestañas horizontales -->
+    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'">Inicio</button>
+    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
+    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
+    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
+    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
+    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+    </div>
+    
+    <div class="header">
+        <h1>Nuestros Servicios</h1>
+    </div>
+    
+    <div class="content">
+        <div class="card-container">
+            <div class="card">
+                <img src="https://www.shutterstock.com/image-photo/beautiful-golden-retriever-cute-puppy-260nw-2526542701.jpg" alt="Consultas veterinarias">
+                <h3>Consultas veterinarias</h3>
+                <p>Ofrecemos consultas veterinarias para el diagnóstico y tratamiento de enfermedades en tus mascotas.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.unidiversidad.com.ar/cache/vacunas-perros_1000_1100.jpg" alt="Vacunación">
+                <h3>Vacunación</h3>
+                <p>Proporcionamos servicios de vacunación para proteger a tus mascotas de enfermedades comunes.</p>
+            </div>
+            <div class="card">
+                <img src="https://farmahigiene.es/modules/dbblog/views/img/post/pexels-pranidchakan-boonrom-1350593.jpg" alt="Cirugías">
+                <h3>Cirugías</h3>
+                <p>Realizamos cirugías con el equipo más avanzado y profesionales altamente capacitados.</p>
+            </div>
+            <div class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9bLBw0kogOqxOLhUaM39ESgyGlq8MibeObQ&s" alt="Hospitalización">
+                <h3>Hospitalización</h3>
+                <p>Ofrecemos servicios de hospitalización para el cuidado intensivo de tus mascotas.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.canalsiete.com.ar/wp-content/uploads/2024/12/mascotas-peluqueria.jpg" alt="Estética y peluquería">
+                <h3>Estética y peluquería</h3>
+                <p>Brindamos servicios de estética y peluquería para mantener a tus mascotas limpias y saludables.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 Veterinaria con IA. Todos los derechos reservados.</p>
+    </div>
+</body>
+</html>

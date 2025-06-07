@@ -3,129 +3,726 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Registro - Veterinaria San Roque</title>
     <link rel="stylesheet" href="style2.css">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             font-size: 16px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
-        .card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
+        
+        .tabs {
             text-align: center;
-        }
-        .card img {
-            width: 150px;
             margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            backdrop-filter: blur(10px);
         }
-        .card h2 {
-            font-size: 2.2em;
-            margin: 25px 0;
-            color: #4c74af;
-        }
-        .card form {
-            display: flex;
-            flex-direction: column;
-        }
-        .card label {
-            font-size: 1.1em;
-            padding: 12px;
-            margin: 10px 0 5px;
-            text-align: left;
-        }
-        .card input {
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .card button {
-            padding: 10px;
-            background-color: #4c74af;
+        
+        .tabs button {
+            background: rgba(255,255,255,0.2);
             color: white;
             border: none;
-            border-radius: 4px;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 25px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        .card button:hover {
-            background-color: #3b5a8f;
+        
+        .tabs button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        
+        .card {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 450px;
+            margin: 30px auto;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card img {
+            width: 120px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .card h2 {
+            font-size: 2.5em;
+            margin: 25px 0;
+            color: #4c74af;
+            background: linear-gradient(45deg, #4c74af, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #4c74af;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4c74af;
+            box-shadow: 0 0 15px rgba(76, 116, 175, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .form-group input.valid {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .form-group input.invalid {
+            border-color: #dc3545;
+            background-color: #fff8f8;
+        }
+        
+        .validation-message {
+            font-size: 0.9em;
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .validation-message.success {
+            color: #28a745;
+            background-color: #d4edda;
+            display: block;
+        }
+        
+        .validation-message.error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            display: block;
+        }
+        
+        .password-strength {
+            margin-top: 10px;
+        }
+        
+        .strength-bar {
+            height: 5px;
+            border-radius: 3px;
+            background-color: #e1e1e1;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        .strength-text {
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #4c74af, #667eea);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(76, 116, 175, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            margin-left: 10px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .card a {
             color: #4c74af;
             text-decoration: none;
-            margin-top: 10px;
+            margin-top: 20px;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
+        
         .card a:hover {
             text-decoration: underline;
+            transform: translateY(-1px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-content img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-content h3 {
+            color: #4c74af;
+            margin-bottom: 15px;
+        }
+        
+        .modal-btn {
+            background: #4c74af;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .modal-btn:hover {
+            background: #3b5a8f;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.95em;
         }
     </style>
 </head>
 <body>
     <!-- Pestañas de navegación -->
-    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='index.html'">Inicio</button>
-    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
-    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
-    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
-    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
-    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+    <div class="tabs">
+        <button onclick="window.location.href='index.html'">Inicio</button>
+        <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
+        <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
+        <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
+        <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
+        <button onclick="window.location.href='registro.html'">Registrarse</button>
     </div>
 
     <div class="card">
         <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo">
         <h2>Crear Cuenta</h2>
-        <form class="register-form">
-            <label for="fullname">Nombre completo:</label>
-            <input type="text" id="fullname" name="fullname" required>
+        <form id="registerForm" class="register-form">
+            <div class="form-group">
+                <label for="fullname">Nombre completo:</label>
+                <input type="text" id="fullname" name="fullname" required>
+                <div class="validation-message" id="fullname-message"></div>
+            </div>
 
-            <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" required>
+            <div class="form-group">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" name="email" required>
+                <div class="validation-message" id="email-message"></div>
+            </div>
 
-            <label for="username">Usuario:</label>
-            <input type="text" id="username" name="username" required>
+            <div class="form-group">
+                <label for="phone">Teléfono:</label>
+                <input type="tel" id="phone" name="phone" placeholder="+54 9 11 1234-5678">
+                <div class="validation-message" id="phone-message"></div>
+            </div>
 
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" name="password" required>
+            <div class="form-group">
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" name="username" required>
+                <div class="validation-message" id="username-message"></div>
+            </div>
 
-            <button type="submit">Registrarse</button>
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">Ingresa una contraseña</div>
+                </div>
+                <div class="validation-message" id="password-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar contraseña:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="validation-message" id="confirm-message"></div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">Acepto los términos y condiciones</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="newsletter" name="newsletter">
+                <label for="newsletter">Deseo recibir noticias y promociones</label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Registrarse
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                </div>
+            </button>
         </form>
         <a href="inicio_sesion.html">¿Ya tienes una cuenta? Inicia sesión</a>
     </div>
 
     <!-- Modal personalizado -->
-    <dialog id="customAlert" style="text-align: center; border-radius: 8px; padding: 20px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Icono" width="80">
-        <p id="alertMessage"></p>
-        <button id="alertOk">OK</button>
-    </dialog>
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Icono">
+            <h3 id="modalTitle">¡Registro Exitoso!</h3>
+            <p id="modalMessage"></p>
+            <button id="modalBtn" class="modal-btn">Continuar</button>
+        </div>
+    </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.querySelector(".register-form");
-            const alertDialog = document.getElementById("customAlert");
-            const alertMessage = document.getElementById("alertMessage");
-            const alertOk = document.getElementById("alertOk");
+        // Simulación de base de datos local (en producción esto estaría en Docker)
+        let usuarios = JSON.parse(localStorage.getItem('usuarios_veterinaria') || '[]');
 
-            form.addEventListener("submit", function(e) {
-                e.preventDefault(); // Evita envío real
-                const nombre = document.getElementById("fullname").value;
-                alertMessage.textContent = `¡Registro exitoso, ${nombre}!`;
-                alertDialog.showModal();
-            });
+        // Referencias a elementos
+        const form = document.getElementById('registerForm');
+        const modal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalBtn = document.getElementById('modalBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
 
-            alertOk.addEventListener("click", function() {
-                alertDialog.close();
-                window.location.href = "inicio_sesion.html";
+        // Campos del formulario
+        const fields = {
+            fullname: document.getElementById('fullname'),
+            email: document.getElementById('email'),
+            phone: document.getElementById('phone'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password'),
+            confirmPassword: document.getElementById('confirmPassword'),
+            terms: document.getElementById('terms')
+        };
+
+        // Validaciones en tiempo real
+        fields.fullname.addEventListener('input', validateName);
+        fields.email.addEventListener('input', validateEmail);
+        fields.phone.addEventListener('input', validatePhone);
+        fields.username.addEventListener('input', validateUsername);
+        fields.password.addEventListener('input', validatePassword);
+        fields.confirmPassword.addEventListener('input', validateConfirmPassword);
+        fields.terms.addEventListener('change', validateForm);
+
+        function validateName() {
+            const name = fields.fullname.value.trim();
+            const message = document.getElementById('fullname-message');
+            
+            if (name.length < 2) {
+                showValidation('fullname', false, 'El nombre debe tener al menos 2 caracteres');
+                return false;
+            } else if (name.length > 50) {
+                showValidation('fullname', false, 'El nombre es demasiado largo');
+                return false;
+            } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(name)) {
+                showValidation('fullname', false, 'Solo se permiten letras y espacios');
+                return false;
+            } else {
+                showValidation('fullname', true, '✓ Nombre válido');
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const email = fields.email.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email)) {
+                showValidation('email', false, 'Ingresa un email válido');
+                return false;
+            } else if (usuarios.some(user => user.email === email)) {
+                showValidation('email', false, 'Este email ya está registrado');
+                return false;
+            } else {
+                showValidation('email', true, '✓ Email disponible');
+                return true;
+            }
+        }
+
+        function validatePhone() {
+            const phone = fields.phone.value.trim();
+            if (phone === '') return true; // Campo opcional
+            
+            const phoneRegex = /^\+?[0-9\s\-()]{8,15}$/;
+            if (!phoneRegex.test(phone)) {
+                showValidation('phone', false, 'Formato de teléfono inválido');
+                return false;
+            } else {
+                showValidation('phone', true, '✓ Teléfono válido');
+                return true;
+            }
+        }
+
+        function validateUsername() {
+            const username = fields.username.value.trim();
+            
+            if (username.length < 3) {
+                showValidation('username', false, 'El usuario debe tener al menos 3 caracteres');
+                return false;
+            } else if (username.length > 20) {
+                showValidation('username', false, 'El usuario es demasiado largo');
+                return false;
+            } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showValidation('username', false, 'Solo letras, números y guión bajo');
+                return false;
+            } else if (usuarios.some(user => user.username === username)) {
+                showValidation('username', false, 'Este usuario ya existe');
+                return false;
+            } else {
+                showValidation('username', true, '✓ Usuario disponible');
+                return true;
+            }
+        }
+
+        function validatePassword() {
+            const password = fields.password.value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let messages = [];
+            
+            // Criterios de validación
+            if (password.length >= 8) strength += 20;
+            else messages.push('8+ caracteres');
+            
+            if (/[a-z]/.test(password)) strength += 20;
+            else messages.push('minúscula');
+            
+            if (/[A-Z]/.test(password)) strength += 20;
+            else messages.push('mayúscula');
+            
+            if (/[0-9]/.test(password)) strength += 20;
+            else messages.push('número');
+            
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+            else messages.push('símbolo');
+            
+            // Actualizar barra de fuerza
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 40) {
+                strengthFill.style.backgroundColor = '#dc3545';
+                strengthText.textContent = 'Débil - Falta: ' + messages.join(', ');
+                strengthText.style.color = '#dc3545';
+                showValidation('password', false, 'La contraseña es muy débil');
+                return false;
+            } else if (strength < 80) {
+                strengthFill.style.backgroundColor = '#ffc107';
+                strengthText.textContent = 'Media - Falta: ' + messages.join(', ');
+                strengthText.style.color = '#ffc107';
+                showValidation('password', true, '⚠ Contraseña aceptable');
+                return true;
+            } else {
+                strengthFill.style.backgroundColor = '#28a745';
+                strengthText.textContent = 'Fuerte - ¡Excelente!';
+                strengthText.style.color = '#28a745';
+                showValidation('password', true, '✓ Contraseña segura');
+                return true;
+            }
+        }
+
+        function validateConfirmPassword() {
+            const password = fields.password.value;
+            const confirmPassword = fields.confirmPassword.value;
+            
+            if (confirmPassword === '') {
+                showValidation('confirm', false, '');
+                return false;
+            } else if (password !== confirmPassword) {
+                showValidation('confirm', false, 'Las contraseñas no coinciden');
+                return false;
+            } else {
+                showValidation('confirm', true, '✓ Contraseñas coinciden');
+                return true;
+            }
+        }
+
+        function showValidation(fieldName, isValid, message) {
+            const field = fields[fieldName] || document.getElementById(fieldName);
+            const messageElement = document.getElementById(fieldName + '-message');
+            
+            if (isValid) {
+                field.classList.remove('invalid');
+                field.classList.add('valid');
+                messageElement.className = 'validation-message success';
+            } else {
+                field.classList.remove('valid');
+                field.classList.add('invalid');
+                messageElement.className = 'validation-message error';
+            }
+            
+            messageElement.textContent = message;
+            validateForm();
+        }
+
+        function validateForm() {
+            const isValid = validateName() && 
+                           validateEmail() && 
+                           validatePhone() && 
+                           validateUsername() && 
+                           validatePassword() && 
+                           validateConfirmPassword() && 
+                           fields.terms.checked;
+            
+            submitBtn.disabled = !isValid;
+        }
+
+        // Envío del formulario
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (submitBtn.disabled) return;
+            
+            // Mostrar loading
+            submitBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            submitBtn.textContent = 'Registrando...';
+            
+            // Simular llamada a API (en producción sería una llamada real a tu backend en Docker)
+            try {
+                await simulateApiCall();
+                
+                // Crear nuevo usuario
+                const newUser = {
+                    id: Date.now(),
+                    fullname: fields.fullname.value.trim(),
+                    email: fields.email.value.trim(),
+                    phone: fields.phone.value.trim(),
+                    username: fields.username.value.trim(),
+                    password: hashPassword(fields.password.value), // En producción usar bcrypt
+                    newsletter: document.getElementById('newsletter').checked,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Guardar en "base de datos" local (en producción sería Docker/PostgreSQL)
+                usuarios.push(newUser);
+                localStorage.setItem('usuarios_veterinaria', JSON.stringify(usuarios));
+                
+                // Mostrar éxito
+                showModal('success', newUser.fullname);
+                
+            } catch (error) {
+                // Mostrar error
+                showModal('error', null, error.message);
+            } finally {
+                // Ocultar loading
+                loading.style.display = 'none';
+                submitBtn.textContent = 'Registrarse';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function simulateApiCall() {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simular 90% de éxito
+                    if (Math.random() > 0.1) {
+                        resolve();
+                    } else {
+                        reject(new Error('Error del servidor. Intenta nuevamente.'));
+                    }
+                }, 2000);
             });
+        }
+
+        function hashPassword(password) {
+            // En producción usar una librería de hash real como bcrypt
+            return btoa(password + 'salt_veterinaria_2025');
+        }
+
+        function showModal(type, userName, errorMessage) {
+            if (type === 'success') {
+                modalTitle.textContent = '¡Registro Exitoso!';
+                modalMessage.innerHTML = `
+                    <p>¡Bienvenido/a <strong>${userName}</strong>!</p>
+                    <p>Tu cuenta ha sido creada exitosamente.</p>
+                    <p>Ahora puedes iniciar sesión y reservar citas para tus mascotas.</p>
+                `;
+                modalBtn.textContent = 'Ir a Iniciar Sesión';
+                modalBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    window.location.href = 'inicio_sesion.html';
+                };
+            } else {
+                modalTitle.textContent = 'Error en el Registro';
+                modalMessage.innerHTML = `
+                    <p style="color: #dc3545;">${errorMessage}</p>
+                    <p>Por favor, intenta nuevamente.</p>
+                `;
+                modalBtn.textContent = 'Intentar Nuevamente';
+                modalBtn.onclick = () => {
+                    modal.style.display = 'none';
+                };
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Validar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            validateForm();
+            
+            // Agregar efectos de enfoque
+            Object.values(fields).forEach(field => {
+                if (field.type !== 'checkbox') {
+                    field.addEventListener('focus', function() {
+                        this.parentElement.style.transform = 'scale(1.02)';
+                    });
+                    
+                    field.addEventListener('blur', function() {
+                        this.parentElement.style.transform = 'scale(1)';
+                    });
+                }
+            });
+        });
+
+        // Función para mostrar usuarios registrados (solo para desarrollo)
+        function mostrarUsuarios() {
+            console.log('Usuarios registrados:', usuarios);
+        }
+
+        // Prevenir envío accidental
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.type !== 'submit') {
+                e.preventDefault();
+            }
         });
     </script>
 </body>

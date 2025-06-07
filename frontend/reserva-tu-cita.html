@@ -37,7 +37,7 @@
             margin: 10px 0 5px;
             text-align: left;
         }
-        .card input {
+        .card input, .card select {
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
@@ -87,101 +87,478 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .error {
+            border: 2px solid #e74c3c !important;
+            background-color: #fdf2f2;
+        }
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .success {
+            border: 2px solid #27ae60 !important;
+            background-color: #f2fdf4;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .hora-ocupada {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .contador-caracteres {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
-    <!-- Agregar pestañas horizontales -->
+    <!-- Pestañas de navegación -->
     <div class="tabs" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='index.html'">Inicio</button>
-    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
-    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
-    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
-    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
-    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+        <button onclick="window.location.href='index.html'">Inicio</button>
+        <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
+        <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
+        <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
+        <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
+        <button onclick="window.location.href='registro.html'">Registrarse</button>
     </div>
+    
     <div class="card">
         <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo">
         <h2>Datos de la Reserva</h2>
-        <form action="/guardar_cita" method="post" class="reserva-form">
-            <label for="nombres">Nombres:</label>
+        
+        <div class="loading" id="loading">
+            <p>Procesando reserva...</p>
+        </div>
+        
+        <form action="/guardar_cita" method="post" class="reserva-form" id="reservaForm">
+            <label for="nombres">Nombres: <span style="color: red;">*</span></label>
             <input type="text" id="nombres" name="nombres" required>
+            <div class="error-message" id="nombres-error">Los nombres solo pueden contener letras</div>
             
-            <label for="apellidos">Apellidos:</label>
+            <label for="apellidos">Apellidos: <span style="color: red;">*</span></label>
             <input type="text" id="apellidos" name="apellidos" required>
+            <div class="error-message" id="apellidos-error">Los apellidos solo pueden contener letras</div>
             
-            <label for="cedula">Número de Cédula:</label>
-            <input type="text" id="cedula" name="cedula" pattern="\d{8}" placeholder="xxxxxxxxx-x" required>
+            <label for="telefono">Número de Teléfono: <span style="color: red;">*</span></label>
+            <input type="tel" id="telefono" name="telefono" pattern="\d{10}" placeholder="0999999999" required maxlength="10">
+            <div class="error-message" id="telefono-error">El teléfono debe tener exactamente 10 dígitos</div>
             
-            <label for="telefono">Número de Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" pattern="\d{10}" placeholder="0999999999" required>
-            
-            <label for="correo">Correo:</label>
+            <label for="correo">Correo: <span style="color: red;">*</span></label>
             <input type="email" id="correo" name="correo" required>
+            <div class="error-message" id="correo-error">Ingrese un correo válido</div>
             
-            <label for="mascota">Nombre de la Mascota:</label>
-            <input type="text" id="mascota" name="mascota" required>
+            <label for="mascota">Nombre de la Mascota: <span style="color: red;">*</span></label>
+            <input type="text" id="mascota" name="mascota" required maxlength="50">
+            <div class="contador-caracteres" id="mascota-contador">50 caracteres restantes</div>
+            <div class="error-message" id="mascota-error">El nombre de la mascota solo puede contener letras</div>
             
-            <label for="fecha">Fecha de la Cita:</label>
+            <label for="tipo-mascota">Tipo de Mascota:</label>
+            <select id="tipo-mascota" name="tipo-mascota">
+                <option value="">Seleccionar...</option>
+                <option value="perro">Perro</option>
+                <option value="gato">Gato</option>
+                <option value="ave">Ave</option>
+                <option value="conejo">Conejo</option>
+                <option value="otro">Otro</option>
+            </select>
+            
+            <label for="servicio">Servicio Requerido:</label>
+            <select id="servicio" name="servicio" required>
+                <option value="">Seleccionar servicio...</option>
+                <option value="consulta">Consulta veterinaria</option>
+                <option value="vacunacion">Vacunación</option>
+                <option value="cirugia">Cirugía</option>
+                <option value="hospitalizacion">Hospitalización</option>
+                <option value="estetica">Estética y peluquería</option>
+            </select>
+            
+            <label for="fecha">Fecha de la Cita: <span style="color: red;">*</span></label>
             <input type="date" id="fecha" name="fecha" required>
+            <div class="error-message" id="fecha-error">Seleccione una fecha válida</div>
             
-            <label for="hora">Hora de la Cita:</label>
-            <input type="time" id="hora" name="hora" required>
+            <label for="hora">Hora de la Cita: <span style="color: red;">*</span></label>
+            <select id="hora" name="hora" required>
+                <option value="">Seleccionar hora...</option>
+            </select>
+            <div class="error-message" id="hora-error">Seleccione una hora disponible</div>
             
-            <button type="submit">Guardar Cita</button>
+            <label for="comentarios">Comentarios adicionales:</label>
+            <textarea id="comentarios" name="comentarios" rows="3" maxlength="200" placeholder="Describa brevemente el motivo de la consulta..."></textarea>
+            <div class="contador-caracteres" id="comentarios-contador">200 caracteres restantes</div>
+            
+            <button type="submit" id="submitBtn">Guardar Cita</button>
         </form>
     </div>
+    
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo" style="width: 100px; margin-bottom: 20px;">
             <p id="modal-text"></p>
+            <button onclick="cerrarModal()" style="margin-top: 15px;">Aceptar</button>
         </div>
     </div>
+
     <script>
-        document.querySelector('.reserva-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const fecha = document.getElementById('fecha').value;
-            const hora = document.getElementById('hora').value;
-            const mascota = document.getElementById('mascota').value;
-            const modal = document.getElementById('myModal');
-            const modalText = document.getElementById('modal-text');
-            modalText.innerText = `Tu reserva ha sido registrada.\nFecha: ${fecha}\nHora: ${hora}\nMascota: ${mascota}`;
-            modal.style.display = "block";
-            this.reset(); // Limpia todos los campos del formulario
+        // Variables globales
+        const horasOcupadas = {
+            '2025-06-08': ['09:00', '14:00', '16:30'],
+            '2025-06-09': ['10:00', '11:30', '15:00']
+        };
+        
+        const horariosDisponibles = [
+            '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+            '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+        ];
+
+        // Inicialización cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            configurarFechaMinima();
+            configurarValidaciones();
+            configurarContadores();
+            configurarModal();
         });
 
-        document.querySelector('.close').addEventListener('click', function() {
-            document.getElementById('myModal').style.display = "none";
-        });
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+        // Configurar fecha mínima (hoy)
+        function configurarFechaMinima() {
+            const hoy = new Date();
+            const fechaStr = hoy.toISOString().split('T')[0];
+            document.getElementById('fecha').min = fechaStr;
+            
+            // Configurar fecha máxima (3 meses adelante)
+            const fechaMax = new Date();
+            fechaMax.setMonth(fechaMax.getMonth() + 3);
+            document.getElementById('fecha').max = fechaMax.toISOString().split('T')[0];
         }
 
-        // Convertir a mayúsculas automáticamente y evitar números
-        document.getElementById('nombres').addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[0-9]/g, '');
-        });
-        document.getElementById('apellidos').addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[0-9]/g, '');
-        });
-        document.getElementById('correo').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
-        document.getElementById('mascota').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
+        // Configurar todas las validaciones
+        function configurarValidaciones() {
+            const form = document.getElementById('reservaForm');
+            
+            // Validación en tiempo real para nombres y apellidos
+            ['nombres', 'apellidos', 'mascota'].forEach(campo => {
+                const input = document.getElementById(campo);
+                input.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '');
+                    validarCampoTexto(this);
+                });
+            });
 
-        // Evitar letras en número de cédula y número de teléfono
-        document.getElementById('cedula').addEventListener('input', function() {
-            this.value = this.value.replace(/[a-zA-Z]/g, '');
-        });
-        document.getElementById('telefono').addEventListener('input', function() {
-            this.value = this.value.replace(/[a-zA-Z]/g, '');
-        });
+            // Validación para cédula y teléfono
+            ['cedula', 'telefono'].forEach(campo => {
+                const input = document.getElementById(campo);
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^\d]/g, '');
+                    if (campo === 'cedula') validarCedula(this);
+                    if (campo === 'telefono') validarTelefono(this);
+                });
+            });
+
+            // Validación de correo
+            document.getElementById('correo').addEventListener('blur', function() {
+                validarCorreo(this);
+            });
+
+            // Actualizar horas disponibles cuando cambia la fecha
+            document.getElementById('fecha').addEventListener('change', function() {
+                actualizarHorasDisponibles();
+                validarFecha(this);
+            });
+
+            // Envío del formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validarFormularioCompleto()) {
+                    enviarFormulario();
+                }
+            });
+        }
+
+        // Configurar contadores de caracteres
+        function configurarContadores() {
+            ['mascota', 'comentarios'].forEach(campo => {
+                const input = document.getElementById(campo);
+                const contador = document.getElementById(campo + '-contador');
+                
+                input.addEventListener('input', function() {
+                    const restantes = this.maxLength - this.value.length;
+                    contador.textContent = `${restantes} caracteres restantes`;
+                    contador.style.color = restantes < 20 ? '#e74c3c' : '#666';
+                });
+            });
+        }
+
+        // Validaciones específicas
+        function validarCampoTexto(input) {
+            const error = document.getElementById(input.id + '-error');
+            if (input.value.trim().length < 2) {
+                mostrarError(input, error, 'Debe tener al menos 2 caracteres');
+                return false;
+            }
+            ocultarError(input, error);
+            return true;
+        }
+
+        function validarCedula(input) {
+            const error = document.getElementById('cedula-error');
+            const cedula = input.value;
+            
+            if (cedula.length !== 10) {
+                mostrarError(input, error, 'La cédula debe tener exactamente 10 dígitos');
+                return false;
+            }
+            
+            // Validación básica de cédula ecuatoriana
+            const provincia = parseInt(cedula.substring(0, 2));
+            if (provincia < 1 || provincia > 24) {
+                mostrarError(input, error, 'Los primeros dos dígitos deben estar entre 01 y 24');
+                return false;
+            }
+            
+            ocultarError(input, error);
+            return true;
+        }
+
+        function validarTelefono(input) {
+            const error = document.getElementById('telefono-error');
+            const telefono = input.value;
+            
+            if (telefono.length !== 10) {
+                mostrarError(input, error, 'El teléfono debe tener exactamente 10 dígitos');
+                return false;
+            }
+            
+            if (!telefono.startsWith('09')) {
+                mostrarError(input, error, 'El teléfono debe empezar con 09');
+                return false;
+            }
+            
+            ocultarError(input, error);
+            return true;
+        }
+
+        function validarCorreo(input) {
+            const error = document.getElementById('correo-error');
+            const email = input.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email)) {
+                mostrarError(input, error, 'Ingrese un correo válido');
+                return false;
+            }
+            
+            ocultarError(input, error);
+            return true;
+        }
+
+        function validarFecha(input) {
+            const error = document.getElementById('fecha-error');
+            const fechaSeleccionada = new Date(input.value);
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            if (fechaSeleccionada < hoy) {
+                mostrarError(input, error, 'No se pueden agendar citas en fechas pasadas');
+                return false;
+            }
+            
+            // No permitir domingos
+            if (fechaSeleccionada.getDay() === 0) {
+                mostrarError(input, error, 'No atendemos los domingos');
+                return false;
+            }
+            
+            ocultarError(input, error);
+            return true;
+        }
+
+        // Actualizar horas disponibles según la fecha
+        function actualizarHorasDisponibles() {
+            const fechaSeleccionada = document.getElementById('fecha').value;
+            const selectHora = document.getElementById('hora');
+            
+            // Limpiar opciones existentes
+            selectHora.innerHTML = '<option value="">Seleccionar hora...</option>';
+            
+            const horasOcupadasHoy = horasOcupadas[fechaSeleccionada] || [];
+            
+            horariosDisponibles.forEach(hora => {
+                const option = document.createElement('option');
+                option.value = hora;
+                option.textContent = hora;
+                
+                if (horasOcupadasHoy.includes(hora)) {
+                    option.disabled = true;
+                    option.textContent += ' (Ocupada)';
+                    option.classList.add('hora-ocupada');
+                }
+                
+                selectHora.appendChild(option);
+            });
+        }
+
+        // Funciones de UI para errores
+        function mostrarError(input, errorElement, mensaje) {
+            input.classList.add('error');
+            input.classList.remove('success');
+            errorElement.textContent = mensaje;
+            errorElement.style.display = 'block';
+        }
+
+        function ocultarError(input, errorElement) {
+            input.classList.remove('error');
+            input.classList.add('success');
+            errorElement.style.display = 'none';
+        }
+
+        // Validación completa del formulario
+        function validarFormularioCompleto() {
+            let esValido = true;
+            
+            // Validar campos requeridos
+            const camposRequeridos = ['nombres', 'apellidos', 'cedula', 'telefono', 'correo', 'mascota', 'fecha', 'servicio'];
+            
+            camposRequeridos.forEach(campo => {
+                const input = document.getElementById(campo);
+                if (!input.value.trim()) {
+                    const error = document.getElementById(campo + '-error') || 
+                                 document.createElement('div');
+                    mostrarError(input, error, 'Este campo es obligatorio');
+                    esValido = false;
+                }
+            });
+            
+            // Validar hora
+            if (!document.getElementById('hora').value) {
+                const horaError = document.getElementById('hora-error');
+                mostrarError(document.getElementById('hora'), horaError, 'Seleccione una hora');
+                esValido = false;
+            }
+            
+            return esValido;
+        }
+
+        // Enviar formulario
+        function enviarFormulario() {
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Mostrar loading
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Procesando...';
+            
+            // Simular envío al servidor
+            setTimeout(() => {
+                const datosReserva = obtenerDatosFormulario();
+                mostrarConfirmacion(datosReserva);
+                
+                // Ocultar loading
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Guardar Cita';
+                
+                // Limpiar formulario
+                document.getElementById('reservaForm').reset();
+                document.querySelectorAll('.success, .error').forEach(el => {
+                    el.classList.remove('success', 'error');
+                });
+            }, 2000);
+        }
+
+        // Obtener datos del formulario
+        function obtenerDatosFormulario() {
+            return {
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                telefono: document.getElementById('telefono').value,
+                correo: document.getElementById('correo').value,
+                mascota: document.getElementById('mascota').value,
+                tipoMascota: document.getElementById('tipo-mascota').value,
+                servicio: document.getElementById('servicio').value,
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+                comentarios: document.getElementById('comentarios').value
+            };
+        }
+
+        // Mostrar confirmación
+        function mostrarConfirmacion(datos) {
+            const modal = document.getElementById('myModal');
+            const modalText = document.getElementById('modal-text');
+            
+            const servicios = {
+                'consulta': 'Consulta veterinaria',
+                'vacunacion': 'Vacunación',
+                'cirugia': 'Cirugía',
+                'hospitalizacion': 'Hospitalización',
+                'estetica': 'Estética y peluquería'
+            };
+            
+            modalText.innerHTML = `
+                <strong>¡Reserva confirmada!</strong><br><br>
+                <strong>Cliente:</strong> ${datos.nombres} ${datos.apellidos}<br>
+                <strong>Mascota:</strong> ${datos.mascota}<br>
+                <strong>Servicio:</strong> ${servicios[datos.servicio] || 'No especificado'}<br>
+                <strong>Fecha:</strong> ${formatearFecha(datos.fecha)}<br>
+                <strong>Hora:</strong> ${datos.hora}<br><br>
+                <em>Recibirá un correo de confirmación en ${datos.correo}</em>
+            `;
+            
+            modal.style.display = "block";
+            
+            // Marcar hora como ocupada
+            if (!horasOcupadas[datos.fecha]) {
+                horasOcupadas[datos.fecha] = [];
+            }
+            horasOcupadas[datos.fecha].push(datos.hora);
+        }
+
+        // Formatear fecha para mostrar
+        function formatearFecha(fecha) {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return new Date(fecha).toLocaleDateString('es-ES', options);
+        }
+
+        // Configurar modal
+        function configurarModal() {
+            const modal = document.getElementById('myModal');
+            const closeBtn = document.querySelector('.close');
+            
+            closeBtn.addEventListener('click', cerrarModal);
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    cerrarModal();
+                }
+            });
+        }
+
+        function cerrarModal() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        // Función para limpiar todos los errores
+        function limpiarErrores() {
+            document.querySelectorAll('.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
     </script>
 </body>
 </html>

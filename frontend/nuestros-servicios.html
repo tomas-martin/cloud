@@ -1,112 +1,1167 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuestros Servicios</title>
+    <title>Nuestros Servicios - Veterinaria San Roque</title>
     <link rel="stylesheet" href="style2.css">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
+            font-size: 16px;
             background-color: #f4f4f4;
             color: #333;
+            margin: 0;
+            padding: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
+        
         .header {
-            background-color: #4c74af;
+            background: linear-gradient(135deg, #4c74af 0%, #667eea 100%);
             color: white;
-            padding: 20px;
+            padding: 30px;
             text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            opacity: 0;
+            animation: fadeInDown 1s ease-out forwards;
         }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
         .content {
-            padding: 20px;
+            padding: 40px 20px 100px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-        .card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            width: 300px;
+        
+        /* Filtros de servicios */
+        .service-filters {
             text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+        
+        .filter-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4c74af 0%, #667eea 100%);
+            transform: scale(1.05);
+        }
+        
+        /* Tarjetas de servicios mejoradas */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.6s ease-out forwards;
+            cursor: pointer;
+            position: relative;
         }
-        .card img {
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .service-card img {
             width: 100%;
-            height: auto;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
-        .card h3 {
+        
+        .service-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .card-content {
+            padding: 25px;
+            position: relative;
+        }
+        
+        .service-card h3 {
+            color: #4c74af;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .service-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .service-price {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .service-details {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4c74af;
+        }
+        
+        .service-details.show {
+            display: block;
+            animation: expandDetails 0.3s ease-out;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
             margin: 10px 0;
+        }
+        
+        .service-features li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .service-features li:before {
+            content: "✓";
+            color: #4c74af;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .book-btn {
+            background: linear-gradient(135deg, #4c74af 0%, #667eea 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 116, 175, 0.4);
+        }
+        
+        /* Estadísticas de servicios */
+        .service-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4c74af;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Modal mejorado */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: slideInModal 0.3s ease;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #aaa;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
             color: #4c74af;
         }
-        .card p {
-            padding: 0 20px;
-            color: #666;
+        
+        .modal h2 {
+            color: #4c74af;
+            margin-bottom: 20px;
         }
+        
+        .modal-form {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .modal-form input,
+        .modal-form select,
+        .modal-form textarea {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .modal-form input:focus,
+        .modal-form select:focus,
+        .modal-form textarea:focus {
+            outline: none;
+            border-color: #4c74af;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #4c74af 0%, #667eea 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 116, 175, 0.4);
+        }
+        
+        /* Tabs mejoradas */
+        .tabs {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tabs button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tabs button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tabs button.active {
+            background: white;
+            color: #4c74af;
+        }
+        
         .footer {
             background-color: #4c74af;
             color: white;
             text-align: center;
-            padding: 10px;
+            padding: 20px;
             position: fixed;
             width: 100%;
             bottom: 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Animaciones */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInModal {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes expandDetails {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 300px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .service-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 20px;
+            }
+        }
+        
+        /* Efectos de carga */
+        .loading {
+            text-align: center;
+            margin: 50px 0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4c74af;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Overlay de servicio seleccionado */
+        .service-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(76, 116, 175, 0.9) 0%, rgba(102, 126, 234, 0.9) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 15px;
+        }
+        
+        .service-card:hover .service-overlay {
+            opacity: 1;
+        }
+        
+        .overlay-text {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <!-- Agregar pestañas horizontales -->
-    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='index.html'">Inicio</button>
-    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
-    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
-    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
-    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
-    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+    <!-- Menú de navegación -->
+    <div class="tabs">
+        <button onclick="navigateToPage('index.html', this)">Inicio</button>
+        <button onclick="navigateToPage('quienes-somos.html', this)">Quienes Somos</button>
+        <button class="active" onclick="navigateToPage('nuestros-servicios.html', this)">Nuestros Servicios</button>
+        <button onclick="navigateToPage('reserva-tu-cita.html', this)">Reserva tu Cita</button>
+        <button onclick="navigateToPage('inicio_sesion.html', this)">Inicia Sesión</button>
+        <button onclick="navigateToPage('registro.html', this)">Registrarse</button>
     </div>
-    
+
     <div class="header">
         <h1>Nuestros Servicios</h1>
+        <p>Descubre toda la gama de servicios profesionales que ofrecemos para el cuidado de tu mascota</p>
     </div>
-    
+
     <div class="content">
-        <div class="card-container">
-            <div class="card">
-                <img src="https://www.shutterstock.com/image-photo/beautiful-golden-retriever-cute-puppy-260nw-2526542701.jpg" alt="Consultas veterinarias">
-                <h3>Consultas veterinarias</h3>
-                <p>Ofrecemos consultas veterinarias para el diagnóstico y tratamiento de enfermedades en tus mascotas.</p>
+        <!-- Estadísticas de servicios -->
+        <div class="service-stats">
+            <div class="stat-card">
+                <div class="stat-number" data-target="15">0</div>
+                <div class="stat-label">Servicios Disponibles</div>
             </div>
-            <div class="card">
-                <img src="https://www.unidiversidad.com.ar/cache/vacunas-perros_1000_1100.jpg" alt="Vacunación">
-                <h3>Vacunación</h3>
-                <p>Proporcionamos servicios de vacunación para proteger a tus mascotas de enfermedades comunes.</p>
+            <div class="stat-card">
+                <div class="stat-number" data-target="24">0</div>
+                <div class="stat-label">Horas de Atención</div>
             </div>
-            <div class="card">
-                <img src="https://farmahigiene.es/modules/dbblog/views/img/post/pexels-pranidchakan-boonrom-1350593.jpg" alt="Cirugías">
-                <h3>Cirugías</h3>
-                <p>Realizamos cirugías con el equipo más avanzado y profesionales altamente capacitados.</p>
+            <div class="stat-card">
+                <div class="stat-number" data-target="5">0</div>
+                <div class="stat-label">Especialistas</div>
             </div>
-            <div class="card">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9bLBw0kogOqxOLhUaM39ESgyGlq8MibeObQ&s" alt="Hospitalización">
-                <h3>Hospitalización</h3>
-                <p>Ofrecemos servicios de hospitalización para el cuidado intensivo de tus mascotas.</p>
-            </div>
-            <div class="card">
-                <img src="https://www.canalsiete.com.ar/wp-content/uploads/2024/12/mascotas-peluqueria.jpg" alt="Estética y peluquería">
-                <h3>Estética y peluquería</h3>
-                <p>Brindamos servicios de estética y peluquería para mantener a tus mascotas limpias y saludables.</p>
+            <div class="stat-card">
+                <div class="stat-number" data-target="100">0</div>
+                <div class="stat-label">% Satisfacción</div>
             </div>
         </div>
+
+        <!-- Filtros de servicios -->
+        <div class="service-filters">
+            <button class="filter-btn active" data-filter="all">Todos los Servicios</button>
+            <button class="filter-btn" data-filter="medical">Servicios Médicos</button>
+            <button class="filter-btn" data-filter="surgery">Cirugías</button>
+            <button class="filter-btn" data-filter="grooming">Estética</button>
+            <button class="filter-btn" data-filter="emergency">Emergencias</button>
+        </div>
+
+        <!-- Grid de servicios -->
+        <div class="services-grid" id="servicesGrid">
+            <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+        </div>
+
+        <!-- Indicador de carga -->
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <p>Cargando servicios...</p>
+        </div>
     </div>
-    
+
+    <!-- Modal para reservar servicio -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Reservar Servicio</h2>
+            <form class="modal-form" id="bookingForm">
+                <input type="text" id="ownerName" placeholder="Nombre del propietario" required>
+                <input type="email" id="ownerEmail" placeholder="Email" required>
+                <input type="tel" id="ownerPhone" placeholder="Teléfono" required>
+                <input type="text" id="petName" placeholder="Nombre de la mascota" required>
+                <select id="petType" required>
+                    <option value="">Tipo de mascota</option>
+                    <option value="perro">Perro</option>
+                    <option value="gato">Gato</option>
+                    <option value="ave">Ave</option>
+                    <option value="reptil">Reptil</option>
+                    <option value="otros">Otros</option>
+                </select>
+                <input type="date" id="appointmentDate" required>
+                <select id="appointmentTime" required>
+                    <option value="">Hora preferida</option>
+                    <option value="08:00">08:00</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                </select>
+                <textarea id="comments" placeholder="Comentarios adicionales" rows="3"></textarea>
+                <button type="submit" class="submit-btn">Reservar Cita</button>
+            </form>
+        </div>
+    </div>
+
     <div class="footer">
-        <p>© 2023 Veterinaria con IA. Todos los derechos reservados.</p>
+        <p>© 2025 Veterinaria San Roque. Todos los derechos reservados.</p>
     </div>
+
+    <script>
+        // Datos de los servicios
+        const servicesData = [
+            {
+                id: 1,
+                name: "Consultas Veterinarias",
+                category: "medical",
+                price: "$25-50",
+                image: "https://www.shutterstock.com/image-photo/beautiful-golden-retriever-cute-puppy-260nw-2526542701.jpg",
+                description: "Consultas completas con diagnóstico profesional para mantener la salud de tu mascota.",
+                features: ["Examen físico completo", "Diagnóstico profesional", "Plan de tratamiento", "Seguimiento personalizado"],
+                duration: "30-45 min"
+            },
+            {
+                id: 2,
+                name: "Vacunación",
+                category: "medical",
+                price: "$15-30",
+                image: "https://www.unidiversidad.com.ar/cache/vacunas-perros_1000_1100.jpg",
+                description: "Programa completo de vacunación para proteger a tu mascota de enfermedades.",
+                features: ["Vacunas múltiples", "Certificado de vacunación", "Calendario personalizado", "Recordatorios automáticos"],
+                duration: "15-20 min"
+            },
+            {
+                id: 3,
+                name: "Cirugías Generales",
+                category: "surgery",
+                price: "$100-500",
+                image: "https://farmahigiene.es/modules/dbblog/views/img/post/pexels-pranidchakan-boonrom-1350593.jpg",
+                description: "Cirugías con equipos de última generación y personal altamente capacitado.",
+                features: ["Quirófano moderno", "Anestesia segura", "Monitoreo continuo", "Cuidados post-operatorios"],
+                duration: "1-4 horas"
+            },
+            {
+                id: 4,
+                name: "Hospitalización",
+                category: "medical",
+                price: "$40-80/día",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9bLBw0kogOqxOLhUaM39ESgyGlq8MibeObQ&s",
+                description: "Cuidado intensivo 24/7 para mascotas que requieren supervisión médica constante.",
+                features: ["Monitoreo 24/7", "Medicación controlada", "Alimentación especializada", "Comunicación diaria"],
+                duration: "Variable"
+            },
+            {
+                id: 5,
+                name: "Estética y Peluquería",
+                category: "grooming",
+                price: "$20-40",
+                image: "https://www.canalsiete.com.ar/wp-content/uploads/2024/12/mascotas-peluqueria.jpg",
+                description: "Servicios completos de belleza e higiene para mantener a tu mascota limpia y saludable.",
+                features: ["Baño completo", "Corte profesional", "Limpieza de oídos", "Corte de uñas"],
+                duration: "1-2 horas"
+            },
+            {
+                id: 6,
+                name: "Emergencias 24/7",
+                category: "emergency",
+                price: "$50-200",
+                image: "https://animalcity.es/clinica/wp-content/uploads/2021/08/veterinary-4940425_1280-min-1024x682.jpg",
+                description: "Atención de emergencia disponible las 24 horas del día, todos los días del año.",
+                features: ["Disponible 24/7", "Atención inmediata", "Equipo de emergencia", "Comunicación directa"],
+                duration: "Variable"
+            },
+            {
+                id: 7,
+                name: "Radiografías",
+                category: "medical",
+                price: "$40-80",
+                image: "https://universidadeuropea.com/resources/media/images/medicina-veterinaria-1200x630.original.jpg",
+                description: "Diagnóstico por imágenes con equipos digitales de alta precisión.",
+                features: ["Imágenes de alta calidad", "Diagnóstico rápido", "Resultados inmediatos", "Archivo digital"],
+                duration: "20-30 min"
+            },
+            {
+                id: 8,
+                name: "Análisis Clínicos",
+                category: "medical",
+                price: "$25-60",
+                image: "https://www.shutterstock.com/image-photo/beautiful-golden-retriever-cute-puppy-260nw-2526542701.jpg",
+                description: "Laboratorio completo para análisis de sangre, orina y otros fluidos corporales.",
+                features: ["Análisis completos", "Resultados rápidos", "Interpretación profesional", "Histórico médico"],
+                duration: "1-2 horas"
+            }
+        ];
+
+        // Variables globales
+        let currentFilter = 'all';
+        let currentService = null;
+
+        // Función para navegación con animación
+        function navigateToPage(url, button) {
+            document.querySelectorAll('.tabs button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            document.body.style.opacity = '0.7';
+            document.body.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+
+        // Función para generar tarjetas de servicios
+        function generateServiceCards(services) {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+
+            services.forEach((service, index) => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.setAttribute('data-category', service.category);
+                
+                card.innerHTML = `
+                    <div class="service-price">${service.price}</div>
+                    <img src="${service.image}" alt="${service.name}" loading="lazy">
+                    <div class="service-overlay">
+                        <div class="overlay-text">
+                            Haz clic para más detalles<br>
+                            <small>Duración: ${service.duration}</small>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${service.name}</h3>
+                        <p>${service.description}</p>
+                        <div class="service-details" id="details-${service.id}">
+                            <h4>Características del servicio:</h4>
+                            <ul class="service-features">
+                                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                            <p><strong>Duración:</strong> ${service.duration}</p>
+                        </div>
+                        <button class="book-btn" onclick="openBookingModal('${service.name}', ${service.id})">
+                            Reservar Cita
+                        </button>
+                    </div>
+                `;
+
+                // Agregar evento click para expandir detalles
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('book-btn')) {
+                        toggleServiceDetails(service.id);
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Función para alternar detalles del servicio
+        function toggleServiceDetails(serviceId) {
+            const details = document.getElementById(`details-${serviceId}`);
+            details.classList.toggle('show');
+        }
+
+        // Función para filtrar servicios
+        function filterServices(category) {
+            currentFilter = category;
+            const filteredServices = category === 'all' 
+                ? servicesData 
+                : servicesData.filter(service => service.category === category);
+            
+            // Animar salida de tarjetas actuales
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach((card, index) => {
+                card.style.animation = 'slideInUp 0.3s ease-out reverse';
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                }, index * 50);
+            });
+
+            // Generar nuevas tarjetas después de la animación
+            setTimeout(() => {
+                generateServiceCards(filteredServices);
+            }, 300);
+        }
+
+        // Función para abrir modal de reserva
+        function openBookingModal(serviceName, serviceId) {
+            currentService = serviceId;
+            document.getElementById('modalTitle').textContent = `Reservar: ${serviceName}`;
+            document.getElementById('bookingModal').style.display = 'block';
+            
+            // Establecer fecha mínima como hoy
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+        }
+
+        // Función para cerrar modal
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+            document.getElementById('bookingForm').reset();
+        }
+
+        // Función para manejar el formulario de reserva
+        function handleBookingForm(event) {
+            event.preventDefault();
+            
+            const formData = {
+                service: currentService,
+                ownerName: document.getElementById('ownerName').value,
+                ownerEmail: document.getElementById('ownerEmail').value,
+                ownerPhone: document.getElementById('ownerPhone').value,
+                petName: document.getElementById('petName').value,
+                petType: document.getElementById('petType').value,
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                comments: document.getElementById('comments').value
+            };
+
+            // Simular envío de datos
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Enviando...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('¡Cita reservada exitosamente! Te contactaremos pronto para confirmar los detalles.');
+                closeModal();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Función para animar contadores
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const increment = target / 100;
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 30);
+        }
+
+        // Función para búsqueda de servicios
+        function searchServices(searchTerm) {
+            const filteredServices = servicesData.filter(service => 
+                service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                service.features.some(feature => feature.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+            generateServiceCards(filteredServices);
+        }
+
+        // Función para obtener servicios relacionados
+        function getRelatedServices(serviceId) {
+            const service = servicesData.find(s => s.id === serviceId);
+            if (!service) return [];
+            
+            return servicesData.filter(s => 
+                s.id !== serviceId && 
+                s.category === service.category
+            ).slice(0, 3);
+        }
+
+        // Función para mostrar notificación
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                color: white;
+                border-radius: 5px;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Función para validar formulario
+        function validateForm() {
+            const requiredFields = ['ownerName', 'ownerEmail', 'ownerPhone', 'petName', 'petType', 'appointmentDate', 'appointmentTime'];
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+            
+            for (let fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    showNotification(`Por favor completa el campo: ${field.placeholder}`, 'error');
+                    field.focus();
+                    return false;
+                }
+            }
+            
+            const email = document.getElementById('ownerEmail').value;
+            if (!emailRegex.test(email)) {
+                showNotification('Por favor ingresa un email válido', 'error');
+                document.getElementById('ownerEmail').focus();
+                return false;
+            }
+            
+            const phone = document.getElementById('ownerPhone').value;
+            if (!phoneRegex.test(phone)) {
+                showNotification('Por favor ingresa un teléfono válido', 'error');
+                document.getElementById('ownerPhone').focus();
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Función para generar horarios disponibles
+        function generateAvailableSlots(date) {
+            const slots = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+            const timeSelect = document.getElementById('appointmentTime');
+            const selectedDate = new Date(date);
+            const today = new Date();
+            
+            // Limpiar opciones existentes
+            timeSelect.innerHTML = '<option value="">Hora preferida</option>';
+            
+            slots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot;
+                option.textContent = slot;
+                
+                // Deshabilitar horarios pasados si es hoy
+                if (selectedDate.toDateString() === today.toDateString()) {
+                    const slotTime = new Date();
+                    const [hours, minutes] = slot.split(':');
+                    slotTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    
+                    if (slotTime <= today) {
+                        option.disabled = true;
+                        option.textContent += ' (No disponible)';
+                    }
+                }
+                
+                timeSelect.appendChild(option);
+            });
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ocultar indicador de carga después de un tiempo
+            setTimeout(() => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                generateServiceCards(servicesData);
+            }, 1000);
+
+            // Configurar filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remover clase active de todos los botones
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    // Agregar clase active al botón clickeado
+                    this.classList.add('active');
+                    // Filtrar servicios
+                    filterServices(this.getAttribute('data-filter'));
+                });
+            });
+
+            // Configurar formulario de reserva
+            document.getElementById('bookingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    handleBookingForm(e);
+                }
+            });
+
+            // Configurar cambio de fecha para generar horarios
+            document.getElementById('appointmentDate').addEventListener('change', function() {
+                if (this.value) {
+                    generateAvailableSlots(this.value);
+                }
+            });
+
+            // Animar contadores cuando estén visibles
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counters = entry.target.querySelectorAll('.stat-number');
+                        counters.forEach(counter => {
+                            animateCounter(counter);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            observer.observe(document.querySelector('.service-stats'));
+
+            // Efecto parallax suave en scroll
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const header = document.querySelector('.header');
+                if (header) {
+                    header.style.transform = `translateY(${scrolled * 0.3}px)`;
+                }
+            });
+
+            // Cerrar modal con Escape
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            // Cerrar modal al hacer click fuera
+            window.onclick = function(event) {
+                const modal = document.getElementById('bookingModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+
+            // Precargar imágenes para mejor rendimiento
+            servicesData.forEach(service => {
+                const img = new Image();
+                img.src = service.image;
+            });
+
+            // Agregar efecto de carga suave
+            document.body.style.opacity = '1';
+            document.body.style.transform = 'scale(1)';
+
+            // Efecto de aparición secuencial de tarjetas
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.service-card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 1200);
+        });
+
+        // Funciones adicionales para mejorar la experiencia
+        
+        // Función para mostrar/ocultar detalles con animación suave
+        function toggleDetails(serviceId) {
+            const details = document.getElementById(`details-${serviceId}`);
+            const isVisible = details.classList.contains('show');
+            
+            if (isVisible) {
+                details.style.maxHeight = '0';
+                details.style.opacity = '0';
+                setTimeout(() => {
+                    details.classList.remove('show');
+                }, 300);
+            } else {
+                details.classList.add('show');
+                details.style.maxHeight = details.scrollHeight + 'px';
+                details.style.opacity = '1';
+            }
+        }
+
+        // Función para detectar dispositivos móviles
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        // Función para optimizar imágenes en dispositivos móviles
+        function optimizeImages() {
+            if (isMobile()) {
+                const images = document.querySelectorAll('.service-card img');
+                images.forEach(img => {
+                    img.loading = 'lazy';
+                    img.style.height = '150px';
+                });
+            }
+        }
+
+        // Función para manejar el redimensionamiento de ventana
+        window.addEventListener('resize', function() {
+            optimizeImages();
+        });
+
+        // Función para agregar animaciones CSS dinámicas
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .notification {
+                transition: all 0.3s ease;
+            }
+            
+            .service-card {
+                will-change: transform, opacity;
+            }
+            
+            .service-card:hover {
+                will-change: auto;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Función para logging de eventos (opcional para analytics)
+        function logEvent(eventName, data = {}) {
+            console.log(`Event: ${eventName}`, data);
+            // Aquí podrías integrar con Google Analytics o similar
+        }
+
+        // Log de eventos importantes
+        document.addEventListener('DOMContentLoaded', () => {
+            logEvent('page_loaded', { page: 'services' });
+        });
+
+        // Función para mostrar estadísticas en tiempo real
+        function updateStats() {
+            const stats = [
+                { element: '.stat-number[data-target="15"]', increment: 1 },
+                { element: '.stat-number[data-target="24"]', increment: 0 },
+                { element: '.stat-number[data-target="5"]', increment: 0 },
+                { element: '.stat-number[data-target="100"]', increment: 0 }
+            ];
+            
+            // Simular actualizaciones (en un caso real vendrían de una API)
+            setInterval(() => {
+                stats.forEach(stat => {
+                    if (stat.increment > 0) {
+                        const element = document.querySelector(stat.element);
+                        if (element) {
+                            const current = parseInt(element.textContent);
+                            const target = parseInt(element.getAttribute('data-target'));
+                            if (current < target + 10) {
+                                element.textContent = current + stat.increment;
+                            }
+                        }
+                    }
+                });
+            }, 30000); // Actualizar cada 30 segundos
+        }
+
+        // Inicializar actualizaciones de estadísticas
+        setTimeout(updateStats, 5000);
+
+    </script>
 </body>
 </html>

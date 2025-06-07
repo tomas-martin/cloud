@@ -18,18 +18,28 @@
             color: white;
             padding: 20px;
             text-align: center;
+            opacity: 0;
+            animation: fadeInDown 1s ease-out forwards;
         }
         .content {
             padding: 20px;
         }
         .services, .about-us {
             margin: 20px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out forwards;
         }
         .services img, .about-us img {
             width: 100%;
             height: auto;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .services img:hover, .about-us img:hover {
+            transform: scale(1.05);
         }
         .footer {
             background-color: #4c74af;
@@ -56,7 +66,15 @@
         .services li {
             margin: 15px 0;
             line-height: 1.6;
+            opacity: 0;
+            animation: slideInLeft 0.5s ease-out forwards;
         }
+        .services li:nth-child(1) { animation-delay: 0.2s; }
+        .services li:nth-child(2) { animation-delay: 0.4s; }
+        .services li:nth-child(3) { animation-delay: 0.6s; }
+        .services li:nth-child(4) { animation-delay: 0.8s; }
+        .services li:nth-child(5) { animation-delay: 1s; }
+        
         .about-us h2 {
             font-size: 2.5em;
             margin-bottom: 20px;
@@ -69,33 +87,193 @@
             text-align: justify;
             padding: 0 20px;
         }
+        
+        /* Animaciones */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Tabs mejoradas */
+        .tabs {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tabs button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tabs button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tabs button.active {
+            background: white;
+            color: #4c74af;
+        }
+        
+        /* Modal para imágenes */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80%;
+            animation: zoomIn 0.3s ease;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: #bbb;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        
+        /* Contador animado */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4c74af;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <!-- Menú de navegación -->
-    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='index.html'">Inicio</button>
-    <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
-    <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
-    <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
-    <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
-    <button onclick="window.location.href='registro.html'">Registrarse</button> <!-- Nueva pestaña -->
+    <div class="tabs">
+        <button class="active" onclick="navigateToPage('index.html', this)">Inicio</button>
+        <button onclick="navigateToPage('quienes-somos.html', this)">Quienes Somos</button>
+        <button onclick="navigateToPage('nuestros-servicios.html', this)">Nuestros Servicios</button>
+        <button onclick="navigateToPage('reserva-tu-cita.html', this)">Reserva tu Cita</button>
+        <button onclick="navigateToPage('inicio_sesion.html', this)">Inicia Sesión</button>
+        <button onclick="navigateToPage('registro.html', this)">Registrarse</button>
     </div>
 
     <div class="header">
-        <h1>Bienvenidos a Nuestra Veterinaria</h1>
+        <h1 id="welcomeText">Bienvenidos a Nuestra Veterinaria</h1>
         <p style="font-size: 1.2em; font-style: italic; color: white; margin-top: 10px;">
-            San Roque: “Guardianes de la Salud y Bienestar de tu Mascota”
+            San Roque: "Guardianes de la Salud y Bienestar de tu Mascota"
         </p>
-        <p>Brindamos los mejores servicios para tus mascotas</p>
+        <p id="serviceText">Brindamos los mejores servicios para tus mascotas</p>
     </div>
 
     <div class="content">
+        <!-- Estadísticas animadas -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" data-target="1250">0</div>
+                <div class="stat-label">Mascotas Atendidas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="850">0</div>
+                <div class="stat-label">Cirugías Exitosas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="15">0</div>
+                <div class="stat-label">Años de Experiencia</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-label">% Satisfacción</div>
+            </div>
+        </div>
+
         <div class="about-us">
             <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo Veterinaria" style="display: block; margin: 0 auto 20px; width: 150px;">
             <h2>Sobre Nosotros</h2>
             <p>Somos una veterinaria dedicada al cuidado y bienestar de tus mascotas. Contamos con un equipo de profesionales altamente capacitados y tecnología de punta para ofrecer el mejor servicio.</p>
-            <img src="https://universidadeuropea.com/resources/media/images/medicina-veterinaria-1200x630.original.jpg" alt="Veterinaria atendiendo mascota" style="display: block; margin: 0 auto 20px; width: 100%; max-width: 600px;">
+            <img src="https://universidadeuropea.com/resources/media/images/medicina-veterinaria-1200x630.original.jpg" alt="Veterinaria atendiendo mascota" style="display: block; margin: 0 auto 20px; width: 100%; max-width: 600px;" onclick="openModal(this)">
         </div>
 
         <div class="services">
@@ -108,12 +286,189 @@
                 <li>Hospitalización</li>
                 <li>Estética y peluquería</li>
             </ul>
-            <img src="https://cdn.pixabay.com/photo/2019/11/17/22/09/veterinarian-4634163_1280.jpg" alt="Servicios veterinarios" style="display: block; margin: 0 auto 20px; width: 100%; max-width: 600px;">
+            <img src="https://cdn.pixabay.com/photo/2019/11/17/22/09/veterinarian-4634163_1280.jpg" alt="Servicios veterinarios" style="display: block; margin: 0 auto 20px; width: 100%; max-width: 600px;" onclick="openModal(this)">
         </div>
+    </div>
+
+    <!-- Modal para imágenes -->
+    <div id="imageModal" class="modal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
     </div>
 
     <div class="footer">
         <p>© 2025 Veterinaria San Roque.</p>
     </div>
+
+    <script>
+        // Función para navegación con animación
+        function navigateToPage(url, button) {
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.tabs button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Agregar clase active al botón clickeado
+            button.classList.add('active');
+            
+            // Animación de salida
+            document.body.style.opacity = '0.7';
+            document.body.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+
+        // Función para abrir modal de imagen
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+        }
+
+        // Función para cerrar modal
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // Cerrar modal al hacer click fuera de la imagen
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Animación de contador
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const increment = target / 100;
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 50);
+        }
+
+        // Inicializar animaciones cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de bienvenida
+            const welcomeText = document.getElementById('welcomeText');
+            const serviceText = document.getElementById('serviceText');
+            
+            setTimeout(() => {
+                welcomeText.style.animation = 'none';
+                welcomeText.offsetHeight; // Trigger reflow
+                welcomeText.style.animation = 'fadeInDown 1s ease-out';
+            }, 500);
+
+            // Animar contadores cuando están visibles
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counters = entry.target.querySelectorAll('.stat-number');
+                        counters.forEach(counter => {
+                            animateCounter(counter);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            observer.observe(document.querySelector('.stats'));
+
+            // Efecto parallax en scroll
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const header = document.querySelector('.header');
+                if (header) {
+                    header.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+            });
+
+            // Animación de texto dinámico
+            const texts = [
+                'Brindamos los mejores servicios para tus mascotas',
+                'Cuidamos a tu mascota como si fuera nuestra',
+                'Profesionales altamente capacitados',
+                'Tecnología de punta para tu tranquilidad'
+            ];
+            
+            let currentText = 0;
+            setInterval(() => {
+                serviceText.style.opacity = '0';
+                setTimeout(() => {
+                    currentText = (currentText + 1) % texts.length;
+                    serviceText.textContent = texts[currentText];
+                    serviceText.style.opacity = '1';
+                }, 500);
+            }, 4000);
+
+            // Efecto de hover en las imágenes
+            const images = document.querySelectorAll('.services img, .about-us img');
+            images.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.filter = 'brightness(1.1) saturate(1.2)';
+                });
+                
+                img.addEventListener('mouseleave', function() {
+                    this.style.filter = 'brightness(1) saturate(1)';
+                });
+            });
+
+            // Agregar efecto de carga suave
+            document.body.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            document.body.style.opacity = '1';
+            document.body.style.transform = 'scale(1)';
+        });
+
+        // Efecto de tipeo para el título
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Funciones de utilidad para mejorar la experiencia
+        document.addEventListener('keydown', function(event) {
+            // Cerrar modal con Escape
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Precargar imágenes para mejor rendimiento
+        function preloadImages() {
+            const images = [
+                'https://universidadeuropea.com/resources/media/images/medicina-veterinaria-1200x630.original.jpg',
+                'https://cdn.pixabay.com/photo/2019/11/17/22/09/veterinarian-4634163_1280.jpg'
+            ];
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        // Llamar a preload cuando se carga la página
+        window.addEventListener('load', preloadImages);
+    </script>
 </body>
 </html>

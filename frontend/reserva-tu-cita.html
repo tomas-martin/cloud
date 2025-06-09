@@ -3,206 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva tu Cita</title>
-    <link rel="stylesheet" href="style2.css">
+    <title>Reserva tu Cita - Veterinaria San Roque</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
+            font-size: 16px;
             background-color: #f4f4f4;
             color: #333;
+            margin: 0;
+            padding: 0;
         }
-        .card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .card img {
-            width: 150px;
-            margin-bottom: 20px;
-        }
-        .card h2 {
-            color: #4c74af;
-        }
-        .card form {
-            display: flex;
-            flex-direction: column;
-        }
-        .card label {
-            margin: 10px 0 5px;
-            text-align: left;
-        }
-        .card input, .card select {
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .card button {
-            padding: 10px;
+        
+        .header {
             background-color: #4c74af;
             color: white;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInDown 1s ease-out forwards;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        /* Tabs mejoradas */
+        .tabs {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tabs button {
+            background: rgba(255,255,255,0.2);
+            color: white;
             border: none;
-            border-radius: 4px;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 25px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        .card button:hover {
-            background-color: #3b5a8f;
+        
+        .tabs button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        
+        .tabs button.active {
+            background: white;
+            color: #4c74af;
+        }
+        
+        .content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .card h2 {
+            color: #4c74af;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4c74af;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #4c74af;
+            outline: none;
+            box-shadow: 0 0 10px rgba(76, 116, 175, 0.2);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #4c74af 0%, #667eea 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 116, 175, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error {
+            border-color: #e74c3c !important;
+            background-color: #fdf2f2;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success {
+            border-color: #27ae60 !important;
+            background-color: #f2fdf4;
+        }
+        
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0,0,0,0.5);
         }
+        
         .modal-content {
-            background-color: #fefefe;
+            background: white;
             margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
             max-width: 500px;
             text-align: center;
-            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         }
-        .close {
+        
+        .modal-close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
             cursor: pointer;
         }
-        .error {
-            border: 2px solid #e74c3c !important;
-            background-color: #fdf2f2;
+        
+        .modal-close:hover {
+            color: #4c74af;
         }
-        .error-message {
-            color: #e74c3c;
-            font-size: 12px;
-            margin-top: 5px;
-            display: none;
-        }
-        .success {
-            border: 2px solid #27ae60 !important;
-            background-color: #f2fdf4;
-        }
+        
         .loading {
             display: none;
             text-align: center;
             margin: 20px 0;
+            color: #4c74af;
         }
-        .hora-ocupada {
-            background-color: #ffebee;
-            color: #c62828;
+        
+        .required {
+            color: #e74c3c;
         }
+        
         .contador-caracteres {
             font-size: 12px;
             color: #666;
             text-align: right;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            background-color: #4c74af;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        /* Animaciones */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs button {
+                padding: 8px 12px;
+                margin: 3px;
+                font-size: 14px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Pestañas de navegación -->
-    <div class="tabs" style="text-align: center; margin-bottom: 20px;">
-        <button onclick="window.location.href='index.html'">Inicio</button>
-        <button onclick="window.location.href='quienes-somos.html'">Quienes Somos</button>
-        <button onclick="window.location.href='nuestros-servicios.html'">Nuestros Servicios</button>
-        <button onclick="window.location.href='reserva-tu-cita.html'">Reserva tu Cita</button>
-        <button onclick="window.location.href='inicio_sesion.html'">Inicia Sesión</button>
-        <button onclick="window.location.href='registro.html'">Registrarse</button>
+    <div class="header">
+        <h1>Reserva tu Cita</h1>
+        <p>Agenda una cita para el cuidado de tu mascota</p>
+    </div>
+
+    <div class="tabs">
+        <button onclick="navigateToPage('index.html', this)">Inicio</button>
+        <button onclick="navigateToPage('quienes-somos.html', this)">Quienes Somos</button>
+        <button onclick="navigateToPage('nuestros-servicios.html', this)">Nuestros Servicios</button>
+        <button class="active" onclick="navigateToPage('reserva-tu-cita.html', this)">Reserva tu Cita</button>
+        <button onclick="navigateToPage('ver-citas.html', this)">Ver Citas</button>
+        <button onclick="navigateToPage('inicio_sesion.html', this)">Inicia Sesión</button>
+        <button onclick="navigateToPage('registro.html', this)">Registrarse</button>
     </div>
     
-    <div class="card">
-        <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo">
-        <h2>Datos de la Reserva</h2>
-        
-        <div class="loading" id="loading">
-            <p>Procesando reserva...</p>
+    <div class="content">
+        <div class="card">
+            <h2>Datos de la Reserva</h2>
+            
+            <div class="loading" id="loading">
+                <p>Procesando reserva...</p>
+            </div>
+            
+            <form id="reservaForm">
+                <div class="form-group">
+                    <label for="nombres">Nombres <span class="required">*</span></label>
+                    <input type="text" id="nombres" name="nombres" required>
+                    <div class="error-message" id="nombres-error">Los nombres solo pueden contener letras</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellidos">Apellidos <span class="required">*</span></label>
+                    <input type="text" id="apellidos" name="apellidos" required>
+                    <div class="error-message" id="apellidos-error">Los apellidos solo pueden contener letras</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefono">Número de Teléfono <span class="required">*</span></label>
+                    <input type="tel" id="telefono" name="telefono" pattern="\d{10}" placeholder="0999999999" required maxlength="10">
+                    <div class="error-message" id="telefono-error">El teléfono debe tener exactamente 10 dígitos</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico <span class="required">*</span></label>
+                    <input type="email" id="correo" name="correo" required>
+                    <div class="error-message" id="correo-error">Ingrese un correo válido</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mascota">Nombre de la Mascota <span class="required">*</span></label>
+                    <input type="text" id="mascota" name="mascota" required maxlength="50">
+                    <div class="contador-caracteres" id="mascota-contador">50 caracteres restantes</div>
+                    <div class="error-message" id="mascota-error">El nombre de la mascota solo puede contener letras</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo-mascota">Tipo de Mascota</label>
+                    <select id="tipo-mascota" name="tipo-mascota">
+                        <option value="">Seleccionar...</option>
+                        <option value="perro">Perro</option>
+                        <option value="gato">Gato</option>
+                        <option value="ave">Ave</option>
+                        <option value="conejo">Conejo</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="servicio">Servicio Requerido <span class="required">*</span></label>
+                    <select id="servicio" name="servicio" required>
+                        <option value="">Seleccionar servicio...</option>
+                        <option value="consulta">Consulta veterinaria</option>
+                        <option value="vacunacion">Vacunación</option>
+                        <option value="cirugia">Cirugía</option>
+                        <option value="hospitalizacion">Hospitalización</option>
+                        <option value="estetica">Estética y peluquería</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha">Fecha de la Cita <span class="required">*</span></label>
+                    <input type="date" id="fecha" name="fecha" required>
+                    <div class="error-message" id="fecha-error">Seleccione una fecha válida</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hora">Hora de la Cita <span class="required">*</span></label>
+                    <select id="hora" name="hora" required>
+                        <option value="">Seleccionar hora...</option>
+                    </select>
+                    <div class="error-message" id="hora-error">Seleccione una hora disponible</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comentarios">Comentarios adicionales</label>
+                    <textarea id="comentarios" name="comentarios" rows="3" maxlength="200" placeholder="Describa brevemente el motivo de la consulta..."></textarea>
+                    <div class="contador-caracteres" id="comentarios-contador">200 caracteres restantes</div>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">Guardar Cita</button>
+            </form>
         </div>
-        
-        <form action="/guardar_cita" method="post" class="reserva-form" id="reservaForm">
-            <label for="nombres">Nombres: <span style="color: red;">*</span></label>
-            <input type="text" id="nombres" name="nombres" required>
-            <div class="error-message" id="nombres-error">Los nombres solo pueden contener letras</div>
-            
-            <label for="apellidos">Apellidos: <span style="color: red;">*</span></label>
-            <input type="text" id="apellidos" name="apellidos" required>
-            <div class="error-message" id="apellidos-error">Los apellidos solo pueden contener letras</div>
-            
-            <label for="telefono">Número de Teléfono: <span style="color: red;">*</span></label>
-            <input type="tel" id="telefono" name="telefono" pattern="\d{10}" placeholder="0999999999" required maxlength="10">
-            <div class="error-message" id="telefono-error">El teléfono debe tener exactamente 10 dígitos</div>
-            
-            <label for="correo">Correo: <span style="color: red;">*</span></label>
-            <input type="email" id="correo" name="correo" required>
-            <div class="error-message" id="correo-error">Ingrese un correo válido</div>
-            
-            <label for="mascota">Nombre de la Mascota: <span style="color: red;">*</span></label>
-            <input type="text" id="mascota" name="mascota" required maxlength="50">
-            <div class="contador-caracteres" id="mascota-contador">50 caracteres restantes</div>
-            <div class="error-message" id="mascota-error">El nombre de la mascota solo puede contener letras</div>
-            
-            <label for="tipo-mascota">Tipo de Mascota:</label>
-            <select id="tipo-mascota" name="tipo-mascota">
-                <option value="">Seleccionar...</option>
-                <option value="perro">Perro</option>
-                <option value="gato">Gato</option>
-                <option value="ave">Ave</option>
-                <option value="conejo">Conejo</option>
-                <option value="otro">Otro</option>
-            </select>
-            
-            <label for="servicio">Servicio Requerido:</label>
-            <select id="servicio" name="servicio" required>
-                <option value="">Seleccionar servicio...</option>
-                <option value="consulta">Consulta veterinaria</option>
-                <option value="vacunacion">Vacunación</option>
-                <option value="cirugia">Cirugía</option>
-                <option value="hospitalizacion">Hospitalización</option>
-                <option value="estetica">Estética y peluquería</option>
-            </select>
-            
-            <label for="fecha">Fecha de la Cita: <span style="color: red;">*</span></label>
-            <input type="date" id="fecha" name="fecha" required>
-            <div class="error-message" id="fecha-error">Seleccione una fecha válida</div>
-            
-            <label for="hora">Hora de la Cita: <span style="color: red;">*</span></label>
-            <select id="hora" name="hora" required>
-                <option value="">Seleccionar hora...</option>
-            </select>
-            <div class="error-message" id="hora-error">Seleccione una hora disponible</div>
-            
-            <label for="comentarios">Comentarios adicionales:</label>
-            <textarea id="comentarios" name="comentarios" rows="3" maxlength="200" placeholder="Describa brevemente el motivo de la consulta..."></textarea>
-            <div class="contador-caracteres" id="comentarios-contador">200 caracteres restantes</div>
-            
-            <button type="submit" id="submitBtn">Guardar Cita</button>
-        </form>
     </div>
     
     <div id="myModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="modal-close">&times;</span>
             <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo" style="width: 100px; margin-bottom: 20px;">
             <p id="modal-text"></p>
-            <button onclick="cerrarModal()" style="margin-top: 15px;">Aceptar</button>
+            <button onclick="cerrarModal()" class="submit-btn">Aceptar</button>
         </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Veterinaria San Roque.</p>
     </div>
 
     <script>
@@ -216,6 +400,21 @@
             '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
             '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
         ];
+
+        // Función para navegación con animación
+        function navigateToPage(url, button) {
+            document.querySelectorAll('.tabs button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            document.body.style.opacity = '0.7';
+            document.body.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
 
         // Inicialización cuando carga la página
         document.addEventListener('DOMContentLoaded', function() {
@@ -231,7 +430,6 @@
             const fechaStr = hoy.toISOString().split('T')[0];
             document.getElementById('fecha').min = fechaStr;
             
-            // Configurar fecha máxima (3 meses adelante)
             const fechaMax = new Date();
             fechaMax.setMonth(fechaMax.getMonth() + 3);
             document.getElementById('fecha').max = fechaMax.toISOString().split('T')[0];
@@ -241,7 +439,6 @@
         function configurarValidaciones() {
             const form = document.getElementById('reservaForm');
             
-            // Validación en tiempo real para nombres y apellidos
             ['nombres', 'apellidos', 'mascota'].forEach(campo => {
                 const input = document.getElementById(campo);
                 input.addEventListener('input', function() {
@@ -250,28 +447,20 @@
                 });
             });
 
-            // Validación para cédula y teléfono
-            ['cedula', 'telefono'].forEach(campo => {
-                const input = document.getElementById(campo);
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^\d]/g, '');
-                    if (campo === 'cedula') validarCedula(this);
-                    if (campo === 'telefono') validarTelefono(this);
-                });
+            document.getElementById('telefono').addEventListener('input', function() {
+                this.value = this.value.replace(/[^\d]/g, '');
+                validarTelefono(this);
             });
 
-            // Validación de correo
             document.getElementById('correo').addEventListener('blur', function() {
                 validarCorreo(this);
             });
 
-            // Actualizar horas disponibles cuando cambia la fecha
             document.getElementById('fecha').addEventListener('change', function() {
                 actualizarHorasDisponibles();
                 validarFecha(this);
             });
 
-            // Envío del formulario
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if (validarFormularioCompleto()) {
@@ -301,26 +490,6 @@
                 mostrarError(input, error, 'Debe tener al menos 2 caracteres');
                 return false;
             }
-            ocultarError(input, error);
-            return true;
-        }
-
-        function validarCedula(input) {
-            const error = document.getElementById('cedula-error');
-            const cedula = input.value;
-            
-            if (cedula.length !== 10) {
-                mostrarError(input, error, 'La cédula debe tener exactamente 10 dígitos');
-                return false;
-            }
-            
-            // Validación básica de cédula ecuatoriana
-            const provincia = parseInt(cedula.substring(0, 2));
-            if (provincia < 1 || provincia > 24) {
-                mostrarError(input, error, 'Los primeros dos dígitos deben estar entre 01 y 24');
-                return false;
-            }
-            
             ocultarError(input, error);
             return true;
         }
@@ -368,7 +537,6 @@
                 return false;
             }
             
-            // No permitir domingos
             if (fechaSeleccionada.getDay() === 0) {
                 mostrarError(input, error, 'No atendemos los domingos');
                 return false;
@@ -383,7 +551,6 @@
             const fechaSeleccionada = document.getElementById('fecha').value;
             const selectHora = document.getElementById('hora');
             
-            // Limpiar opciones existentes
             selectHora.innerHTML = '<option value="">Seleccionar hora...</option>';
             
             const horasOcupadasHoy = horasOcupadas[fechaSeleccionada] || [];
@@ -396,7 +563,6 @@
                 if (horasOcupadasHoy.includes(hora)) {
                     option.disabled = true;
                     option.textContent += ' (Ocupada)';
-                    option.classList.add('hora-ocupada');
                 }
                 
                 selectHora.appendChild(option);
@@ -421,20 +587,17 @@
         function validarFormularioCompleto() {
             let esValido = true;
             
-            // Validar campos requeridos
-            const camposRequeridos = ['nombres', 'apellidos', 'cedula', 'telefono', 'correo', 'mascota', 'fecha', 'servicio'];
+            const camposRequeridos = ['nombres', 'apellidos', 'telefono', 'correo', 'mascota', 'fecha', 'servicio'];
             
             camposRequeridos.forEach(campo => {
                 const input = document.getElementById(campo);
                 if (!input.value.trim()) {
-                    const error = document.getElementById(campo + '-error') || 
-                                 document.createElement('div');
+                    const error = document.getElementById(campo + '-error');
                     mostrarError(input, error, 'Este campo es obligatorio');
                     esValido = false;
                 }
             });
             
-            // Validar hora
             if (!document.getElementById('hora').value) {
                 const horaError = document.getElementById('hora-error');
                 mostrarError(document.getElementById('hora'), horaError, 'Seleccione una hora');
@@ -449,22 +612,18 @@
             const loading = document.getElementById('loading');
             const submitBtn = document.getElementById('submitBtn');
             
-            // Mostrar loading
             loading.style.display = 'block';
             submitBtn.disabled = true;
             submitBtn.textContent = 'Procesando...';
             
-            // Simular envío al servidor
             setTimeout(() => {
                 const datosReserva = obtenerDatosFormulario();
                 mostrarConfirmacion(datosReserva);
                 
-                // Ocultar loading
                 loading.style.display = 'none';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Guardar Cita';
                 
-                // Limpiar formulario
                 document.getElementById('reservaForm').reset();
                 document.querySelectorAll('.success, .error').forEach(el => {
                     el.classList.remove('success', 'error');
@@ -477,7 +636,6 @@
             return {
                 nombres: document.getElementById('nombres').value,
                 apellidos: document.getElementById('apellidos').value,
-                cedula: document.getElementById('cedula').value,
                 telefono: document.getElementById('telefono').value,
                 correo: document.getElementById('correo').value,
                 mascota: document.getElementById('mascota').value,
@@ -514,7 +672,6 @@
             
             modal.style.display = "block";
             
-            // Marcar hora como ocupada
             if (!horasOcupadas[datos.fecha]) {
                 horasOcupadas[datos.fecha] = [];
             }
@@ -535,7 +692,7 @@
         // Configurar modal
         function configurarModal() {
             const modal = document.getElementById('myModal');
-            const closeBtn = document.querySelector('.close');
+            const closeBtn = document.querySelector('.modal-close');
             
             closeBtn.addEventListener('click', cerrarModal);
             
@@ -548,16 +705,6 @@
 
         function cerrarModal() {
             document.getElementById('myModal').style.display = "none";
-        }
-
-        // Función para limpiar todos los errores
-        function limpiarErrores() {
-            document.querySelectorAll('.error').forEach(el => {
-                el.classList.remove('error');
-            });
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
-            });
         }
     </script>
 </body>

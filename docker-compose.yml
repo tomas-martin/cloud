@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-veterinaria
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: veterinaria
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/reservas.sql:/docker-entrypoint-initdb.d/reservas.sql
+    networks:
+      - red-veterinaria
+
+  backend:
+    build: ./backend
+    container_name: backend-veterinaria
+    ports:
+      - "9000:9000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: veterinaria
+    depends_on:
+      - mysql
+    networks:
+      - red-veterinaria
+
+volumes:
+  mysql_data:
+
+networks:
+  red-veterinaria:

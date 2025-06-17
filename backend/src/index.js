@@ -1,11 +1,15 @@
+require('dotenv').config(); // Carga las variables de entorno desde .env
+
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const Joi = require('joi');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Configuración de la base de datos usando variables de entorno
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -13,8 +17,38 @@ const dbConfig = {
   database: process.env.DB_NAME || 'veterinaria',
 };
 
+// Crear un pool de conexiones para mejorar el rendimiento
+const pool = mysql.createPool(dbConfig);
+
+// Esquema de validación de datos con Joi
+const reservaSchema = Joi.object({
+  nombre: Joi.string().required(),
+  apellido: Joi.string().required(),
+  telefono: Joi.string().required(),
+  correo: Joi.string().email().required(),
+  dni: Joi.string().required(),
+  nombre_mascota: Joi.string().required(),
+  tipo_mascota: Joi.string().required(),
+  servicio: Joi.string().required(),
+  fecha: Joi.date().required(),
+  hora: Joi.string().required(),
+  comentarios: Joi.string().optional(),
+});
+
+// Función para manejar errores de manera centralizada
+const handleError = (res, error, message = 'Error inesperado') => {
+  console.error(error); // Imprime el error en la consola
+  res.status(500).json({ error: message });
+};
+
 // POST /api/reservas → Crear nueva reserva
 app.post('/api/reservas', async (req, res) => {
+  // Validar los datos del formulario
+  const { error } = reservaSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: 'Datos inválidos: ' + error.details[0].message });
+  }
+
   const {
     nombre,
     apellido,
@@ -29,8 +63,12 @@ app.post('/api/reservas', async (req, res) => {
     comentarios,
   } = req.body;
 
+  let connection;
+
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    // Obtener una conexión del pool
+    connection = await pool.getConnection();
+    await connection.beginTransaction(); // Iniciar la transacción
 
     // 1. Buscar o crear usuario
     const [usuarios] = await connection.execute(
@@ -62,11 +100,17 @@ app.post('/api/reservas', async (req, res) => {
       [servicio, fecha, hora, comentarios, mascotaId, usuarioId]
     );
 
-    await connection.end();
+    await connection.commit(); // Confirmar la transacción
     res.status(201).json({ mensaje: 'Reserva creada con éxito' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al crear la reserva' });
+    if (connection) {
+      await connection.rollback(); // Deshacer todo si ocurre un error
+    }
+    handleError(res, err, 'Error al crear la reserva');
+  } finally {
+    if (connection) {
+      connection.release(); // Liberar la conexión para que otro cliente la use
+    }
   }
 });
 
@@ -74,20 +118,25 @@ app.post('/api/reservas', async (req, res) => {
 app.get('/api/reservas/:dni', async (req, res) => {
   const { dni } = req.params;
 
-  try {
-    const connection = await mysql.createConnection(dbConfig);
+  let connection;
 
+  try {
+    // Obtener una conexión del pool
+    connection = await pool.getConnection();
+
+    // Buscar el usuario por DNI
     const [usuarios] = await connection.execute(
       'SELECT id FROM usuario_cita WHERE dni = ?',
       [dni]
     );
+
     if (usuarios.length === 0) {
-      await connection.end();
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
     const usuarioId = usuarios[0].id;
 
+    // Obtener las reservas del usuario
     const [turnos] = await connection.execute(
       `SELECT t.id, t.servicio, t.fecha, t.hora, t.comentarios,
               m.nombre AS nombre_mascota, m.tipo AS tipo_mascota
@@ -98,15 +147,19 @@ app.get('/api/reservas/:dni', async (req, res) => {
       [usuarioId]
     );
 
-    await connection.end();
     res.json({ reservas: turnos });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener reservas' });
+    handleError(res, err, 'Error al obtener reservas');
+  } finally {
+    if (connection) {
+      connection.release(); // Liberar la conexión
+    }
   }
 });
 
+// Configuración del puerto del servidor
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Servidor backend escuchando en puerto ${PORT}`);
 });
+

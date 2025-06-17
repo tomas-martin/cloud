@@ -348,8 +348,6 @@
                 <li><a href="nuestros-servicios.html">Nuestros Servicios</a></li>
                 <li><a href="reserva-tu-cita.html">Reservar Cita</a></li>
                 <li><a href="ver-citas.html" class="active">Ver Citas</a></li>
-                <li><a href="registro.html">Registrarse</a></li>
-                <li><a href="inicio_sesion.html">Iniciar Sesión</a></li>
             </ul>
         </div>
     </nav>
@@ -365,7 +363,7 @@
             <div class="citas-container">
                 <!-- Buscador -->
                 <div class="search-container">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nombre del dueño, mascota o teléfono...">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por DNI del dueño...">
                     <button class="search-btn" onclick="buscarCitas()">Buscar</button>
                 </div>
 
@@ -385,11 +383,12 @@
     </footer>
 
     <script>
-        // Datos de ejemplo (simulando base de datos)
+        // Datos de ejemplo con campo DNI
         const citasEjemplo = [
             {
                 id: 1,
                 nombreDueno: "María González",
+                dni: "30123456",
                 telefono: "2612345678",
                 email: "maria@email.com",
                 nombreMascota: "Max",
@@ -405,6 +404,7 @@
             {
                 id: 2,
                 nombreDueno: "Carlos Rodríguez",
+                dni: "28999888",
                 telefono: "2619876543",
                 email: "carlos@email.com",
                 nombreMascota: "Luna",
@@ -420,6 +420,7 @@
             {
                 id: 3,
                 nombreDueno: "Ana Martínez",
+                dni: "33445566",
                 telefono: "2615551234",
                 email: "ana@email.com",
                 nombreMascota: "Rocco",
@@ -435,6 +436,7 @@
             {
                 id: 4,
                 nombreDueno: "Roberto Silva",
+                dni: "27889900",
                 telefono: "2617890123",
                 email: "roberto@email.com",
                 nombreMascota: "Mimi",
@@ -450,6 +452,7 @@
             {
                 id: 5,
                 nombreDueno: "Laura Fernández",
+                dni: "31221122",
                 telefono: "2613456789",
                 email: "laura@email.com",
                 nombreMascota: "Thor",
@@ -466,7 +469,6 @@
 
         let citasFiltradas = [...citasEjemplo];
 
-        // Función para formatear fecha
         function formatearFecha(fecha) {
             const fechaObj = new Date(fecha + 'T00:00:00');
             return fechaObj.toLocaleDateString('es-ES', {
@@ -477,7 +479,6 @@
             });
         }
 
-        // Función para obtener clase de estado
         function obtenerClaseEstado(estado) {
             const clases = {
                 'confirmada': 'estado-confirmada',
@@ -488,7 +489,6 @@
             return clases[estado] || '';
         }
 
-        // Función para obtener emoji según el tipo de mascota
         function obtenerEmojiMascota(tipo) {
             const emojis = {
                 'Perro': '🐕',
@@ -500,15 +500,14 @@
             return emojis[tipo] || '🐾';
         }
 
-        // Función para renderizar las citas
         function renderizarCitas(citas) {
             const citasList = document.getElementById('citasList');
-            
+
             if (citas.length === 0) {
                 citasList.innerHTML = `
                     <div class="no-citas">
                         <h3>No se encontraron citas</h3>
-                        <p>No hay citas que coincidan con tu búsqueda.</p>
+                        <p>No hay citas que coincidan con tu búsqueda por DNI.</p>
                     </div>
                 `;
                 return;
@@ -524,8 +523,12 @@
                             📅 ${formatearFecha(cita.fecha)} - ${cita.hora}
                         </div>
                     </div>
-                    
+
                     <div class="cita-info">
+                        <div class="info-item">
+                            <span class="info-label">🆔 DNI:</span>
+                            <span class="info-value">${cita.dni}</span>
+                        </div>
                         <div class="info-item">
                             <span class="info-label">📞 Teléfono:</span>
                             <span class="info-value">${cita.telefono}</span>
@@ -551,7 +554,7 @@
                             <span class="info-value">${cita.motivo}</span>
                         </div>
                     </div>
-                    
+
                     ${cita.descripcion ? `
                         <div class="cita-descripcion">
                             <div class="descripcion-label">📝 Descripción:</div>
@@ -564,43 +567,34 @@
             citasList.innerHTML = citasHTML;
         }
 
-        // Función para buscar citas
+        // ✅ Solo busca por DNI
         function buscarCitas() {
             const termino = document.getElementById('searchInput').value.toLowerCase().trim();
-            
+
             if (termino === '') {
                 citasFiltradas = [...citasEjemplo];
             } else {
-                citasFiltradas = citasEjemplo.filter(cita => 
-                    cita.nombreDueno.toLowerCase().includes(termino) ||
-                    cita.nombreMascota.toLowerCase().includes(termino) ||
-                    cita.telefono.includes(termino) ||
-                    cita.email.toLowerCase().includes(termino) ||
-                    cita.motivo.toLowerCase().includes(termino) ||
-                    cita.raza.toLowerCase().includes(termino)
+                citasFiltradas = citasEjemplo.filter(cita =>
+                    cita.dni && cita.dni.toLowerCase().includes(termino)
                 );
             }
-            
+
             renderizarCitas(citasFiltradas);
         }
 
-        // Función para simular carga desde base de datos
         function cargarCitas() {
             const loadingIndicator = document.getElementById('loadingIndicator');
-            
             setTimeout(() => {
                 renderizarCitas(citasFiltradas);
             }, 1500);
         }
 
-        // Event listeners
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 buscarCitas();
             }
         });
 
-        // Búsqueda en tiempo real (opcional)
         document.getElementById('searchInput').addEventListener('input', function() {
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(() => {
@@ -608,34 +602,16 @@
             }, 500);
         });
 
-        // Inicializar la página
         document.addEventListener('DOMContentLoaded', function() {
             cargarCitas();
-            
-            // Animación de entrada
+
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.5s ease-in-out';
-            
             setTimeout(() => {
                 document.body.style.opacity = '1';
             }, 100);
         });
-
-        // Función para conectar con la base de datos real (para implementar más tarde)
-        async function obtenerCitasDesdeDB() {
-            try {
-                // Aquí iría la llamada a tu API/base de datos
-                // const response = await fetch('/api/citas');
-                // const citas = await response.json();
-                // return citas;
-                
-                // Por ahora retornamos los datos de ejemplo
-                return citasEjemplo;
-            } catch (error) {
-                console.error('Error al obtener citas:', error);
-                return [];
-            }
-        }
     </script>
 </body>
+
 </html>

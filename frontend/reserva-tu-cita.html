@@ -311,6 +311,13 @@
                     <input type="tel" id="telefono" name="telefono" pattern="\d{10}" placeholder="0999999999" required maxlength="10">
                     <div class="error-message" id="telefono-error">El teléfono debe tener exactamente 10 dígitos</div>
                 </div>
+
+                <div class="form-group">
+                    <label for="dni">DNI <span class="required">*</span></label>
+                    <input type="text" id="dni" name="dni" pattern="\d{7,8}" placeholder="12345678" required maxlength="8">
+                    <div class="error-message" id="dni-error">El DNI debe tener entre 7 y 8 dígitos</div>
+                </div>
+
                 
                 <div class="form-group">
                     <label for="correo">Correo Electrónico <span class="required">*</span></label>

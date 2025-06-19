@@ -1,7 +1,7 @@
 require('dotenv').config(); // Carga las variables de entorno desde .env
 
 const express = require('express');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg'); // Cambiado de mysql2 a pg
 const cors = require('cors');
 const Joi = require('joi');
 
@@ -9,22 +9,25 @@ const app = express();
 
 // Configurar CORS para permitir conexión desde Vercel
 app.use(cors({
-  origin: ['https://tu-dominio-vercel.vercel.app', 'http://localhost:3000'],
-  credentials: true
+  origin: [
+    'https://cloud-9787046lw-tomasmartins-projects.vercel.app',
+    'https://cloud-sooty.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5500'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
-// Configuración de la base de datos usando variables de entorno
-const dbConfig = {
-  host: process.env.DB_HOST || 'mysql',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
-  database: process.env.DB_NAME || 'veterinaria',
-};
-
-// Crear un pool de conexiones para mejorar el rendimiento
-const pool = mysql.createPool(dbConfig);
+// Configuración de PostgreSQL usando variables de entorno
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 // Esquema de validación de datos con Joi
 const reservaSchema = Joi.object({
@@ -38,32 +41,44 @@ const reservaSchema = Joi.object({
   servicio: Joi.string().required(),
   fecha: Joi.date().required(),
   hora: Joi.string().required(),
-  comentarios: Joi.string().optional(),
+  comentarios: Joi.string().optional().allow(''),
 });
 
 // Función para manejar errores de manera centralizada
 const handleError = (res, error, message = 'Error inesperado') => {
-  console.error(error); // Imprime el error en la consola
+  console.error('Error:', error);
   res.status(500).json({ error: message });
 };
 
 // Ruta de prueba para verificar conexión
 app.get('/api/health', async (req, res) => {
   try {
-    const connection = await pool.getConnection();
-    await connection.execute('SELECT 1');
-    connection.release();
-    res.json({ status: 'OK', message: 'Backend funcionando correctamente' });
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    res.json({ 
+      status: 'OK', 
+      message: 'Backend funcionando correctamente',
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ status: 'ERROR', message: 'Error de conexión a la base de datos' });
+    console.error('Health check error:', error);
+    res.status(500).json({ 
+      status: 'ERROR', 
+      message: 'Error de conexión a la base de datos',
+      error: error.message 
+    });
   }
 });
 
 // POST /api/reservas → Crear nueva reserva
 app.post('/api/reservas', async (req, res) => {
+  console.log('Datos recibidos:', req.body);
+  
   // Validar los datos del formulario
   const { error } = reservaSchema.validate(req.body);
   if (error) {
+    console.error('Error de validación:', error.details[0].message);
     return res.status(400).json({ error: 'Datos inválidos: ' + error.details[0].message });
   }
 
@@ -81,103 +96,123 @@ app.post('/api/reservas', async (req, res) => {
     comentarios,
   } = req.body;
 
-  let connection;
+  const client = await pool.connect();
 
   try {
-    // Obtener una conexión del pool
-    connection = await pool.getConnection();
-    await connection.beginTransaction(); // Iniciar la transacción
+    await client.query('BEGIN');
 
     // 1. Buscar o crear usuario
-    const [usuarios] = await connection.execute(
-      'SELECT id FROM usuario_cita WHERE dni = ?',
-      [dni]
-    );
+    const usuarioQuery = 'SELECT id FROM usuario_cita WHERE dni = $1';
+    const usuarioResult = await client.query(usuarioQuery, [dni]);
 
     let usuarioId;
-    if (usuarios.length > 0) {
-      usuarioId = usuarios[0].id;
+    if (usuarioResult.rows.length > 0) {
+      usuarioId = usuarioResult.rows[0].id;
+      console.log('Usuario existente encontrado:', usuarioId);
     } else {
-      const [insertUsuario] = await connection.execute(
-        'INSERT INTO usuario_cita (nombre, apellido, telefono, dni, correo) VALUES (?, ?, ?, ?, ?)',
-        [nombre, apellido, telefono, dni, correo]
-      );
-      usuarioId = insertUsuario.insertId;
+      const insertUsuarioQuery = `
+        INSERT INTO usuario_cita (nombre, apellido, telefono, dni, correo) 
+        VALUES ($1, $2, $3, $4, $5) 
+        RETURNING id
+      `;
+      const insertUsuarioResult = await client.query(insertUsuarioQuery, 
+        [nombre, apellido, telefono, dni, correo]);
+      usuarioId = insertUsuarioResult.rows[0].id;
+      console.log('Nuevo usuario creado:', usuarioId);
     }
 
     // 2. Crear mascota
-    const [insertMascota] = await connection.execute(
-      'INSERT INTO mascotas (nombre, tipo, usuarioId) VALUES (?, ?, ?)',
-      [nombre_mascota, tipo_mascota, usuarioId]
-    );
-    const mascotaId = insertMascota.insertId;
+    const insertMascotaQuery = `
+      INSERT INTO mascotas (nombre, tipo, usuarioId) 
+      VALUES ($1, $2, $3) 
+      RETURNING id
+    `;
+    const insertMascotaResult = await client.query(insertMascotaQuery, 
+      [nombre_mascota, tipo_mascota, usuarioId]);
+    const mascotaId = insertMascotaResult.rows[0].id;
+    console.log('Mascota creada:', mascotaId);
 
     // 3. Crear turno
-    await connection.execute(
-      'INSERT INTO turnos (servicio, fecha, hora, comentarios, mascotaId, usuarioId) VALUES (?, ?, ?, ?, ?, ?)',
-      [servicio, fecha, hora, comentarios, mascotaId, usuarioId]
-    );
+    const insertTurnoQuery = `
+      INSERT INTO turnos (servicio, fecha, hora, comentarios, mascotaId, usuarioId) 
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    await client.query(insertTurnoQuery, 
+      [servicio, fecha, hora, comentarios || '', mascotaId, usuarioId]);
 
-    await connection.commit(); // Confirmar la transacción
-    res.status(201).json({ mensaje: 'Reserva creada con éxito' });
+    await client.query('COMMIT');
+    console.log('Reserva creada exitosamente');
+    
+    res.status(201).json({ 
+      mensaje: 'Reserva creada con éxito',
+      data: {
+        usuarioId,
+        mascotaId,
+        fecha,
+        hora,
+        servicio
+      }
+    });
   } catch (err) {
-    if (connection) {
-      await connection.rollback(); // Deshacer todo si ocurre un error
-    }
-    handleError(res, err, 'Error al crear la reserva');
+    await client.query('ROLLBACK');
+    console.error('Error en la transacción:', err);
+    handleError(res, err, 'Error al crear la reserva: ' + err.message);
   } finally {
-    if (connection) {
-      connection.release(); // Liberar la conexión para que otro cliente la use
-    }
+    client.release();
   }
 });
 
 // GET /api/reservas/:dni → Obtener reservas de un usuario
 app.get('/api/reservas/:dni', async (req, res) => {
   const { dni } = req.params;
-
-  let connection;
+  console.log('Buscando reservas para DNI:', dni);
 
   try {
-    // Obtener una conexión del pool
-    connection = await pool.getConnection();
-
     // Buscar el usuario por DNI
-    const [usuarios] = await connection.execute(
-      'SELECT id FROM usuario_cita WHERE dni = ?',
-      [dni]
-    );
+    const usuarioQuery = 'SELECT id FROM usuario_cita WHERE dni = $1';
+    const usuarioResult = await pool.query(usuarioQuery, [dni]);
 
-    if (usuarios.length === 0) {
+    if (usuarioResult.rows.length === 0) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    const usuarioId = usuarios[0].id;
+    const usuarioId = usuarioResult.rows[0].id;
 
     // Obtener las reservas del usuario
-    const [turnos] = await connection.execute(
-      `SELECT t.id, t.servicio, t.fecha, t.hora, t.comentarios,
-              m.nombre AS nombre_mascota, m.tipo AS tipo_mascota
-         FROM turnos t
-         JOIN mascotas m ON t.mascotaId = m.id
-        WHERE t.usuarioId = ?
-        ORDER BY t.fecha DESC, t.hora DESC`,
-      [usuarioId]
-    );
+    const turnosQuery = `
+      SELECT t.id, t.servicio, t.fecha, t.hora, t.comentarios,
+             m.nombre AS nombre_mascota, m.tipo AS tipo_mascota
+      FROM turnos t
+      JOIN mascotas m ON t.mascotaId = m.id
+      WHERE t.usuarioId = $1
+      ORDER BY t.fecha DESC, t.hora DESC
+    `;
+    
+    const turnosResult = await pool.query(turnosQuery, [usuarioId]);
 
-    res.json({ reservas: turnos });
+    res.json({ 
+      reservas: turnosResult.rows,
+      total: turnosResult.rows.length
+    });
   } catch (err) {
-    handleError(res, err, 'Error al obtener reservas');
-  } finally {
-    if (connection) {
-      connection.release(); // Liberar la conexión
-    }
+    console.error('Error al obtener reservas:', err);
+    handleError(res, err, 'Error al obtener reservas: ' + err.message);
   }
+});
+
+// Manejo de rutas no encontradas
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    error: 'Ruta no encontrada',
+    path: req.originalUrl,
+    method: req.method
+  });
 });
 
 // Configuración del puerto del servidor
 const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
-  console.log(`Servidor backend escuchando en puerto ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor backend escuchando en puerto ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'PostgreSQL conectado' : 'Sin configuración de DB'}`);
 });
-

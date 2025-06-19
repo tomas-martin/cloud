@@ -24,12 +24,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Configuración de PostgreSQL usando variables de entorno
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
-
 // Esquema de validación de datos con Joi
 const reservaSchema = Joi.object({
   nombre: Joi.string().required(),

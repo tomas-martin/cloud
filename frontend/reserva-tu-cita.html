@@ -613,7 +613,7 @@
         }
 
         // Enviar formulario
-        function enviarFormulario() {
+        async function enviarFormulario() {
             const loading = document.getElementById('loading');
             const submitBtn = document.getElementById('submitBtn');
             
@@ -621,19 +621,61 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Procesando...';
             
-            setTimeout(() => {
+            try {
                 const datosReserva = obtenerDatosFormulario();
-                mostrarConfirmacion(datosReserva);
                 
+                // Llamar a la API del backend
+                const response = await fetch('http://tu-ip-kubernetes:30007/api/reservas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nombre: datosReserva.nombres,
+                        apellido: datosReserva.apellidos,
+                        telefono: datosReserva.telefono,
+                        correo: datosReserva.correo,
+                        dni: document.getElementById('dni').value,
+                        nombre_mascota: datosReserva.mascota,
+                        tipo_mascota: datosReserva.tipoMascota,
+                        servicio: datosReserva.servicio,
+                        fecha: datosReserva.fecha,
+                        hora: datosReserva.hora,
+                        comentarios: datosReserva.comentarios
+                    })
+                });
+
+                if (response.ok) {
+                    const resultado = await response.json();
+                    mostrarConfirmacion(datosReserva);
+                    
+                    // Limpiar formulario
+                    document.getElementById('reservaForm').reset();
+                    document.querySelectorAll('.success, .error').forEach(el => {
+                        el.classList.remove('success', 'error');
+                    });
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al procesar la reserva');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                const modal = document.getElementById('myModal');
+                const modalText = document.getElementById('modal-text');
+                
+                modalText.innerHTML = `
+                    <strong>Error al procesar la reserva</strong><br><br>
+                    ${error.message}<br><br>
+                    Por favor, inténtelo nuevamente.
+                `;
+                
+                modal.style.display = "block";
+            } finally {
                 loading.style.display = 'none';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Guardar Cita';
-                
-                document.getElementById('reservaForm').reset();
-                document.querySelectorAll('.success, .error').forEach(el => {
-                    el.classList.remove('success', 'error');
-                });
-            }, 2000);
+            }
         }
 
         // Obtener datos del formulario

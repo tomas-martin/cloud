@@ -6,12 +6,18 @@ const cors = require('cors');
 const Joi = require('joi');
 
 const app = express();
-app.use(cors());
+
+// Configurar CORS para permitir conexión desde Vercel
+app.use(cors({
+  origin: ['https://tu-dominio-vercel.vercel.app', 'http://localhost:3000'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Configuración de la base de datos usando variables de entorno
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || 'mysql',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'veterinaria',
@@ -41,6 +47,21 @@ const handleError = (res, error, message = 'Error inesperado') => {
   res.status(500).json({ error: message });
 };
 
+<<<<<<< HEAD
+=======
+// Ruta de prueba para verificar conexión
+app.get('/api/health', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.execute('SELECT 1');
+    connection.release();
+    res.json({ status: 'OK', message: 'Backend funcionando correctamente' });
+  } catch (error) {
+    res.status(500).json({ status: 'ERROR', message: 'Error de conexión a la base de datos' });
+  }
+});
+
+>>>>>>> c346372 (Intentando conectar la base de datos)
 // POST /api/reservas → Crear nueva reserva
 app.post('/api/reservas', async (req, res) => {
   // Validar los datos del formulario
@@ -161,5 +182,9 @@ app.get('/api/reservas/:dni', async (req, res) => {
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Servidor backend escuchando en puerto ${PORT}`);
+<<<<<<< HEAD
 });
 
+=======
+});
+>>>>>>> c346372 (Intentando conectar la base de datos)

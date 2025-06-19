@@ -625,7 +625,7 @@
                 const datosReserva = obtenerDatosFormulario();
                 
                 // Llamar a la API del backend
-                const response = await fetch('http://tu-ip-kubernetes:30007/api/reservas', {
+                const response = await fetch('https://backend-vet-app.onrender.com/api/reservas', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

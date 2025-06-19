@@ -47,8 +47,6 @@ const handleError = (res, error, message = 'Error inesperado') => {
   res.status(500).json({ error: message });
 };
 
-<<<<<<< HEAD
-=======
 // Ruta de prueba para verificar conexión
 app.get('/api/health', async (req, res) => {
   try {
@@ -61,7 +59,6 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
->>>>>>> c346372 (Intentando conectar la base de datos)
 // POST /api/reservas → Crear nueva reserva
 app.post('/api/reservas', async (req, res) => {
   // Validar los datos del formulario
@@ -182,9 +179,5 @@ app.get('/api/reservas/:dni', async (req, res) => {
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Servidor backend escuchando en puerto ${PORT}`);
-<<<<<<< HEAD
 });
 
-=======
-});
->>>>>>> c346372 (Intentando conectar la base de datos)

@@ -18,8 +18,6 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 9000
-<<<<<<< HEAD
-=======
           env:
             - name: DB_HOST
               value: "mysql"
@@ -31,4 +29,4 @@ spec:
               value: "veterinaria"
             - name: PORT
               value: "9000"
->>>>>>> c346372 (Intentando conectar la base de datos)
+

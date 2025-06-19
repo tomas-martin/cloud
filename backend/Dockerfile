@@ -8,11 +8,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copia todo el contenido de la carpeta 'cloud/backend' al contenedor en /app
+# Copia el resto del código fuente al contenedor
 COPY . .
 
-# Exponer el puerto que tu aplicación usará (en este caso, 9000)
+# Expone el puerto que usa tu backend (ajusta si no es 9000)
 EXPOSE 9000
 
-# Ejecuta el archivo 'index.js' ubicado en 'src/'
+# Comando para arrancar la aplicación
 CMD ["node", "src/index.js"]
+

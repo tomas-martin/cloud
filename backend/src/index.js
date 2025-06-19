@@ -1,7 +1,7 @@
 require('dotenv').config(); // Carga las variables de entorno desde .env
 
 const express = require('express');
-const { Pool } = require('pg'); // Cambiado de mysql2 a pg
+const pool = require('./db'); // 👈 ahora lo importamos de db.js
 const cors = require('cors');
 const Joi = require('joi');
 

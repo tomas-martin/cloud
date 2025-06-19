@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Hacer una solicitud POST al backend
-                const response = await fetch('http://localhost:9000/api/reservas', {
+                const response = await fetch('https://backend-vet-app.onrender.com/api/reservas', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -34,4 +34,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

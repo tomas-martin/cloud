@@ -468,7 +468,8 @@
         }
 
         function formatearFecha(fecha) {
-    const fechaObj = new Date(fecha);
+    const fechaISO = fecha.includes('T') ? fecha : fecha + 'T00:00:00';
+    const fechaObj = new Date(fechaISO);
     if (isNaN(fechaObj.getTime())) {
         return 'Fecha inválida';
     }

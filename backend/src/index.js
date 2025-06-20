@@ -186,14 +186,15 @@ app.get('/api/reservas/:dni', async (req, res) => {
     
     const turnosResult = await pool.query(turnosQuery, [usuarioId]);
 
-    res.json({ 
+    const datosUsuario = await pool.query(
+  'SELECT nombre, apellido, dni FROM usuario_cita WHERE id = $1',
+  [usuarioId]
+);
+
+res.json({ 
   reservas: turnosResult.rows,
   total: turnosResult.rows.length,
-  usuario: {
-    nombre: usuarioResult.rows[0].nombre,
-    apellido: usuarioResult.rows[0].apellido,
-    dni: dni
-  }
+  usuario: datosUsuario.rows[0]  // 👈 esto agrega el nombre y apellido al frontend
 });
   } catch (err) {
     console.error('Error al obtener reservas:', err);

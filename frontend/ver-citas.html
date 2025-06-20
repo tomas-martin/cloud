@@ -468,17 +468,18 @@
         }
 
         function formatearFecha(fecha) {
-            const fechaObj = new Date(fecha + 'T00:00:00');
-            return fechaObj.toLocaleDateString('es-ES', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
+    const fechaObj = new Date(fecha);
+    if (isNaN(fechaObj.getTime())) {
+        return 'Fecha inválida';
+    }
+    return fechaObj.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
         function formatearHora(hora) {
-            // La hora viene en formato HH:MM:SS, la convertimos a HH:MM
             return hora.substring(0, 5);
         }
 

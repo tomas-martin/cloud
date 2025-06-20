@@ -468,7 +468,13 @@
         }
 
         function formatearFecha(fecha) {
-    const fechaISO = fecha.includes('T') ? fecha : fecha + 'T00:00:00';
+    // fecha viene en formato dd-mm-yyyy
+    const partes = fecha.split('-'); // separa por guión
+    if (partes.length !== 3) return 'Fecha inválida';
+
+    // reordenar a yyyy-mm-dd
+    const fechaISO = `${partes[2]}-${partes[1]}-${partes[0]}T00:00:00`;
+
     const fechaObj = new Date(fechaISO);
     if (isNaN(fechaObj.getTime())) {
         return 'Fecha inválida';

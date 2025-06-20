@@ -12,7 +12,8 @@ app.use(cors({
   origin: [
     'https://cloud-9787046lw-tomasmartins-projects.vercel.app',
     'https://cloud-sooty.vercel.app',
-    'https://cloud-jz4wf8iv0-tomasmartins-projects.vercel.app', // 👈 ¡AGREGAR ESTE!
+    'https://cloud-jz4wf8iv0-tomasmartins-projects.vercel.app',
+    'https://cloud-oz6sbw7yf-tomasmartins-projects.vercel.app',
     'http://localhost:3000',
     'http://localhost:5000',
     'http://127.0.0.1:5500'

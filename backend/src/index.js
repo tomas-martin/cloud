@@ -97,7 +97,7 @@ app.post('/api/reservas', async (req, res) => {
     await client.query('BEGIN');
 
     // 1. Buscar o crear usuario
-    const usuarioQuery = 'SELECT id FROM usuario_cita WHERE dni = $1';
+    const usuarioQuery = 'SELECT id, nombre, apellido FROM usuario_cita WHERE dni = $1';
     const usuarioResult = await client.query(usuarioQuery, [dni]);
 
     let usuarioId;
@@ -186,9 +186,14 @@ app.get('/api/reservas/:dni', async (req, res) => {
     const turnosResult = await pool.query(turnosQuery, [usuarioId]);
 
     res.json({ 
-      reservas: turnosResult.rows,
-      total: turnosResult.rows.length
-    });
+  reservas: turnosResult.rows,
+  total: turnosResult.rows.length,
+  usuario: {
+    nombre: usuarioResult.rows[0].nombre,
+    apellido: usuarioResult.rows[0].apellido,
+    dni: dni
+  }
+});
   } catch (err) {
     console.error('Error al obtener reservas:', err);
     handleError(res, err, 'Error al obtener reservas: ' + err.message);

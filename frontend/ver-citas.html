@@ -150,6 +150,28 @@
             box-shadow: 0 8px 25px rgba(76, 116, 175, 0.5);
         }
 
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
         /* Lista de citas */
         .citas-list {
             display: grid;
@@ -228,7 +250,7 @@
         .info-label {
             font-weight: 600;
             color: #666;
-            min-width: 80px;
+            min-width: 100px;
         }
 
         .info-value {
@@ -248,12 +270,6 @@
             color: #4c74af;
             margin-bottom: 0.5rem;
         }
-
-        /* Estados de citas */
-        .estado-confirmada { border-left-color: #28a745; }
-        .estado-pendiente { border-left-color: #ffc107; }
-        .estado-cancelada { border-left-color: #dc3545; }
-        .estado-completada { border-left-color: #17a2b8; }
 
         /* Loading y mensajes */
         .loading {
@@ -289,6 +305,40 @@
             color: #4c74af;
             margin-bottom: 1rem;
             font-size: 1.5rem;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* Información del usuario */
+        .user-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2196f3;
+        }
+
+        .user-info h4 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
         }
 
         /* Footer */
@@ -356,21 +406,29 @@
     <main class="main-content">
         <div class="container">
             <div class="page-header">
-                <h1>Gestión de Citas</h1>
-                <p>Visualiza y administra todas las citas de la veterinaria</p>
+                <h1>Consultar Citas</h1>
+                <p>Ingresa tu DNI para ver tus citas programadas</p>
             </div>
 
             <div class="citas-container">
                 <!-- Buscador -->
                 <div class="search-container">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por DNI del dueño...">
-                    <button class="search-btn" onclick="buscarCitas()">Buscar</button>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Ingresa tu DNI (ej: 30123456)" maxlength="8">
+                    <button class="search-btn" id="searchBtn" onclick="buscarCitas()">Buscar Citas</button>
+                    <button class="clear-btn" id="clearBtn" onclick="limpiarBusqueda()" style="display: none;">Limpiar</button>
                 </div>
+
+                <!-- Mensajes -->
+                <div id="messages"></div>
+
+                <!-- Información del usuario (se muestra cuando se encuentran citas) -->
+                <div id="userInfo" style="display: none;"></div>
 
                 <!-- Lista de citas -->
                 <div class="citas-list" id="citasList">
-                    <div class="loading" id="loadingIndicator">
-                        Cargando citas...
+                    <div class="no-citas">
+                        <h3>👋 ¡Bienvenido!</h3>
+                        <p>Ingresa tu DNI en el campo de búsqueda para consultar tus citas programadas.</p>
                     </div>
                 </div>
             </div>
@@ -383,91 +441,31 @@
     </footer>
 
     <script>
-        // Datos de ejemplo con campo DNI
-        const citasEjemplo = [
-            {
-                id: 1,
-                nombreDueno: "María González",
-                dni: "30123456",
-                telefono: "2612345678",
-                email: "maria@email.com",
-                nombreMascota: "Max",
-                tipoMascota: "Perro",
-                raza: "Golden Retriever",
-                edad: "3 años",
-                fecha: "2025-06-15",
-                hora: "10:30",
-                motivo: "Vacunación anual",
-                descripcion: "Control de rutina y aplicación de vacunas correspondientes al plan sanitario anual.",
-                estado: "confirmada"
-            },
-            {
-                id: 2,
-                nombreDueno: "Carlos Rodríguez",
-                dni: "28999888",
-                telefono: "2619876543",
-                email: "carlos@email.com",
-                nombreMascota: "Luna",
-                tipoMascota: "Gato",
-                raza: "Siamés",
-                edad: "2 años",
-                fecha: "2025-06-16",
-                hora: "14:00",
-                motivo: "Consulta general",
-                descripcion: "La mascota presenta síntomas de decaimiento y pérdida de apetito desde hace 2 días.",
-                estado: "pendiente"
-            },
-            {
-                id: 3,
-                nombreDueno: "Ana Martínez",
-                dni: "33445566",
-                telefono: "2615551234",
-                email: "ana@email.com",
-                nombreMascota: "Rocco",
-                tipoMascota: "Perro",
-                raza: "Mestizo",
-                edad: "5 años",
-                fecha: "2025-06-17",
-                hora: "09:15",
-                motivo: "Cirugía menor",
-                descripcion: "Extracción de quiste sebáceo en la zona del lomo. Procedimiento ambulatorio.",
-                estado: "confirmada"
-            },
-            {
-                id: 4,
-                nombreDueno: "Roberto Silva",
-                dni: "27889900",
-                telefono: "2617890123",
-                email: "roberto@email.com",
-                nombreMascota: "Mimi",
-                tipoMascota: "Gato",
-                raza: "Persa",
-                edad: "4 años",
-                fecha: "2025-06-14",
-                hora: "16:30",
-                motivo: "Control post-operatorio",
-                descripcion: "Revisión de herida quirúrgica tras esterilización realizada la semana pasada.",
-                estado: "completada"
-            },
-            {
-                id: 5,
-                nombreDueno: "Laura Fernández",
-                dni: "31221122",
-                telefono: "2613456789",
-                email: "laura@email.com",
-                nombreMascota: "Thor",
-                tipoMascota: "Perro",
-                raza: "Pastor Alemán",
-                edad: "7 años",
-                fecha: "2025-06-18",
-                hora: "11:00",
-                motivo: "Emergencia",
-                descripcion: "Cojera repentina en pata trasera derecha. Posible lesión durante el ejercicio.",
-                estado: "cancelada"
-            }
-        ];
+        // URL del backend - Cambiar por tu URL de producción
+        const API_BASE_URL = 'https://backend-vet-app.onrender.com';
 
-        let citasFiltradas = [...citasEjemplo];
+        let isLoading = false;
+        let currentUserData = null;
+
+        function mostrarMensaje(mensaje, tipo = 'error') {
+            const messagesContainer = document.getElementById('messages');
+            const className = tipo === 'error' ? 'error-message' : 'success-message';
+            
+            messagesContainer.innerHTML = `
+                <div class="${className}">
+                    ${mensaje}
+                </div>
+            `;
+
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                messagesContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        function limpiarMensajes() {
+            document.getElementById('messages').innerHTML = '';
+        }
 
         function formatearFecha(fecha) {
             const fechaObj = new Date(fecha + 'T00:00:00');
@@ -479,14 +477,9 @@
             });
         }
 
-        function obtenerClaseEstado(estado) {
-            const clases = {
-                'confirmada': 'estado-confirmada',
-                'pendiente': 'estado-pendiente',
-                'cancelada': 'estado-cancelada',
-                'completada': 'estado-completada'
-            };
-            return clases[estado] || '';
+        function formatearHora(hora) {
+            // La hora viene en formato HH:MM:SS, la convertimos a HH:MM
+            return hora.substring(0, 5);
         }
 
         function obtenerEmojiMascota(tipo) {
@@ -500,65 +493,75 @@
             return emojis[tipo] || '🐾';
         }
 
-        function renderizarCitas(citas) {
+        function mostrarInfoUsuario(userData) {
+    const userInfo = document.getElementById('userInfo');
+    if (userData && userData.reservas && userData.reservas.length > 0) {
+        userInfo.innerHTML = `
+            <h4>📋 Información del Usuario</h4>
+            <p><strong>Nombre:</strong> ${userData.usuario.nombre} ${userData.usuario.apellido}</p>
+            <p><strong>DNI:</strong> ${userData.usuario.dni}</p>
+            <p><strong>Total de citas:</strong> ${userData.total}</p>
+        `;
+        userInfo.style.display = 'block';
+    } else {
+        userInfo.style.display = 'none';
+    }
+}
+        function renderizarCitas(userData) {
             const citasList = document.getElementById('citasList');
 
-            if (citas.length === 0) {
+            if (!userData || !userData.reservas || userData.reservas.length === 0) {
                 citasList.innerHTML = `
                     <div class="no-citas">
-                        <h3>No se encontraron citas</h3>
-                        <p>No hay citas que coincidan con tu búsqueda por DNI.</p>
+                        <h3>😔 No se encontraron citas</h3>
+                        <p>No hay citas programadas para el DNI ingresado.</p>
+                        <p>Verifica que el DNI sea correcto o <a href="reserva-tu-cita.html">programa una nueva cita</a>.</p>
                     </div>
                 `;
+                document.getElementById('userInfo').style.display = 'none';
                 return;
             }
 
-            const citasHTML = citas.map(cita => `
-                <div class="cita-card ${obtenerClaseEstado(cita.estado)}">
+            mostrarInfoUsuario(userData);
+
+            const citasHTML = userData.reservas.map(cita => `
+                <div class="cita-card">
                     <div class="cita-header">
                         <h3 class="cita-title">
-                            ${obtenerEmojiMascota(cita.tipoMascota)} ${cita.nombreMascota} - ${cita.nombreDueno}
+                            ${obtenerEmojiMascota(cita.tipo_mascota)} ${cita.nombre_mascota}
                         </h3>
                         <div class="cita-fecha">
-                            📅 ${formatearFecha(cita.fecha)} - ${cita.hora}
+                            📅 ${formatearFecha(cita.fecha)} - ${formatearHora(cita.hora)}
                         </div>
                     </div>
 
                     <div class="cita-info">
                         <div class="info-item">
-                            <span class="info-label">🆔 DNI:</span>
-                            <span class="info-value">${cita.dni}</span>
+                            <span class="info-label">🐾 Mascota:</span>
+                            <span class="info-value">${cita.nombre_mascota}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">📞 Teléfono:</span>
-                            <span class="info-value">${cita.telefono}</span>
+                            <span class="info-label">🏷️ Tipo:</span>
+                            <span class="info-value">${cita.tipo_mascota}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">📧 Email:</span>
-                            <span class="info-value">${cita.email}</span>
+                            <span class="info-label">🩺 Servicio:</span>
+                            <span class="info-value">${cita.servicio}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">🐾 Tipo:</span>
-                            <span class="info-value">${cita.tipoMascota}</span>
+                            <span class="info-label">📅 Fecha:</span>
+                            <span class="info-value">${formatearFecha(cita.fecha)}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">🏷️ Raza:</span>
-                            <span class="info-value">${cita.raza}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">📅 Edad:</span>
-                            <span class="info-value">${cita.edad}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">🎯 Motivo:</span>
-                            <span class="info-value">${cita.motivo}</span>
+                            <span class="info-label">⏰ Hora:</span>
+                            <span class="info-value">${formatearHora(cita.hora)}</span>
                         </div>
                     </div>
 
-                    ${cita.descripcion ? `
+                    ${cita.comentarios && cita.comentarios.trim() ? `
                         <div class="cita-descripcion">
-                            <div class="descripcion-label">📝 Descripción:</div>
-                            <div>${cita.descripcion}</div>
+                            <div class="descripcion-label">📝 Comentarios:</div>
+                            <div>${cita.comentarios}</div>
                         </div>
                     ` : ''}
                 </div>
@@ -567,44 +570,126 @@
             citasList.innerHTML = citasHTML;
         }
 
-        // ✅ Solo busca por DNI
-        function buscarCitas() {
-            const termino = document.getElementById('searchInput').value.toLowerCase().trim();
+        function mostrarLoading() {
+            const citasList = document.getElementById('citasList');
+            citasList.innerHTML = `
+                <div class="loading">
+                    Buscando citas...
+                </div>
+            `;
+        }
 
-            if (termino === '') {
-                citasFiltradas = [...citasEjemplo];
-            } else {
-                citasFiltradas = citasEjemplo.filter(cita =>
-                    cita.dni && cita.dni.toLowerCase().includes(termino)
-                );
+        async function buscarCitas() {
+            const dni = document.getElementById('searchInput').value.trim();
+            const searchBtn = document.getElementById('searchBtn');
+
+            // Validaciones
+            if (!dni) {
+                mostrarMensaje('Por favor, ingresa tu DNI.', 'error');
+                return;
             }
 
-            renderizarCitas(citasFiltradas);
+            if (dni.length < 7 || dni.length > 8) {
+                mostrarMensaje('El DNI debe tener entre 7 y 8 dígitos.', 'error');
+                return;
+            }
+
+            if (!/^\d+$/.test(dni)) {
+                mostrarMensaje('El DNI solo debe contener números.', 'error');
+                return;
+            }
+
+            if (isLoading) return;
+
+            isLoading = true;
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Buscando...';
+            
+            limpiarMensajes();
+            mostrarLoading();
+
+            try {
+                console.log('Buscando citas para DNI:', dni);
+                
+                const response = await fetch(`${API_BASE_URL}/api/reservas/${dni}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                console.log('Status de respuesta:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Datos recibidos:', data);
+                    
+                    currentUserData = data;
+                    renderizarCitas(data);
+                    
+                    if (data.total > 0) {
+                        mostrarMensaje(`✅ Se encontraron ${data.total} cita(s) para el DNI ${dni}.`, 'success');
+                        document.getElementById('clearBtn').style.display = 'block';
+                    }
+                } else if (response.status === 404) {
+                    renderizarCitas(null);
+                    mostrarMensaje('No se encontraron citas para el DNI ingresado.', 'error');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('Error al buscar citas:', error);
+                
+                renderizarCitas(null);
+                
+                if (error.message.includes('fetch')) {
+                    mostrarMensaje('❌ Error de conexión. Verifica tu conexión a internet e intenta nuevamente.', 'error');
+                } else {
+                    mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+                }
+            } finally {
+                isLoading = false;
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Buscar Citas';
+            }
         }
 
-        function cargarCitas() {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            setTimeout(() => {
-                renderizarCitas(citasFiltradas);
-            }, 1500);
+        function limpiarBusqueda() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearBtn').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            currentUserData = null;
+            limpiarMensajes();
+            
+            document.getElementById('citasList').innerHTML = `
+                <div class="no-citas">
+                    <h3>👋 ¡Bienvenido!</h3>
+                    <p>Ingresa tu DNI en el campo de búsqueda para consultar tus citas programadas.</p>
+                </div>
+            `;
         }
 
+        // Event listeners
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 buscarCitas();
             }
         });
 
-        document.getElementById('searchInput').addEventListener('input', function() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                buscarCitas();
-            }, 500);
+        // Solo permitir números en el input
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            // Remover cualquier carácter que no sea número
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limpiar mensajes al escribir
+            if (this.value === '') {
+                limpiarMensajes();
+            }
         });
 
+        // Animación de entrada
         document.addEventListener('DOMContentLoaded', function() {
-            cargarCitas();
-
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.5s ease-in-out';
             setTimeout(() => {
@@ -613,5 +698,4 @@
         });
     </script>
 </body>
-
 </html>

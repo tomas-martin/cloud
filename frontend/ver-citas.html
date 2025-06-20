@@ -468,23 +468,38 @@
         }
 
         function formatearFecha(fecha) {
-    // fecha viene en formato dd-mm-yyyy
-    const partes = fecha.split('-'); // separa por guión
-    if (partes.length !== 3) return 'Fecha inválida';
+    if (!fecha) return 'Fecha inválida';
 
-    // reordenar a yyyy-mm-dd
-    const fechaISO = `${partes[2]}-${partes[1]}-${partes[0]}T00:00:00`;
-
-    const fechaObj = new Date(fechaISO);
-    if (isNaN(fechaObj.getTime())) {
-        return 'Fecha inválida';
+    // Si es un string ISO válido, crear Date directamente
+    let fechaObj = new Date(fecha);
+    if (!isNaN(fechaObj.getTime())) {
+        return fechaObj.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     }
-    return fechaObj.toLocaleDateString('es-ES', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+
+    // Si no es válido, probar si es formato dd-mm-yyyy y convertir
+    if (typeof fecha === 'string' && fecha.includes('-')) {
+        const partes = fecha.split('-');
+        if (partes.length === 3) {
+            // dd-mm-yyyy → yyyy-mm-dd
+            const fechaISO = `${partes[2]}-${partes[1]}-${partes[0]}T00:00:00`;
+            fechaObj = new Date(fechaISO);
+            if (!isNaN(fechaObj.getTime())) {
+                return fechaObj.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+        }
+    }
+
+    return 'Fecha inválida';
 }
         function formatearHora(hora) {
             return hora.substring(0, 5);

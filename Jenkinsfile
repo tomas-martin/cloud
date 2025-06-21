@@ -15,7 +15,9 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE ."
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
             }
         }
 
@@ -24,13 +26,12 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID,
                                                  usernameVariable: 'DOCKER_USER',
                                                  passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
+                    sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $DOCKER_IMAGE
-                    '''
+                    """
                 }
             }
         }
     }
 }
-

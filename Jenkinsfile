@@ -16,7 +16,8 @@ pipeline {
         stage('Build Docker') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE)
+                    // Actualiza esta línea para especificar la ruta al Dockerfile dentro de la carpeta 'backend'
+                    docker.build(DOCKER_IMAGE, 'backend')
                 }
             }
         }

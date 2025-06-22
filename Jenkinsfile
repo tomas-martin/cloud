@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh "docker build -t $IMAGE_TAG ."
+                sh "docker build -t $IMAGE_TAG ./backend"
             }
         }
 

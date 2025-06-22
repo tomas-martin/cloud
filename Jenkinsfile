@@ -60,7 +60,7 @@ pipeline {
                 expression { env.JOB_NAME == 'ci-prod' }
             }
             steps {
-                sh 'curl -X POST https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=_lf-I7QNmlk'
+                sh 'curl -X POST https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
             }
         }
     }

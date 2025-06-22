@@ -6,14 +6,31 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
-        stage('Detectar rama y tag') {
+        stage('Validar rama') {
             steps {
                 script {
                     def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
-                    def tag = branch == 'main' ? 'latest' : branch
-                    env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
-                    echo "Construyendo imagen con tag: ${env.IMAGE_TAG}"
+
+                    // Cortar la ejecución si la rama no coincide con el job
+                    if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
+                        (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
+                        (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
+                        echo "🚫 Esta rama (${branch}) no corresponde al job ${env.JOB_NAME}. Deteniendo ejecución."
+                        currentBuild.result = 'NOT_BUILT'
+                        error("Build cancelado por protección de ambiente")
+                    }
+
+                    // Si coincide, setear el tag
+                    env.IMAGE_TAG = "${IMAGE_BASE}:${branch == 'main' ? 'latest' : branch}"
+                    echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
+
+                    // Hacemos el checkout
+                    checkout scm
                 }
             }
         }

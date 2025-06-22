@@ -6,14 +6,32 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
-        stage('Detectar rama y tag') {
+        stage('Validar rama') {
             steps {
                 script {
                     def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
-                    def tag = branch == 'main' ? 'latest' : branch
+
+                    // Validación por job y rama
+                    if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
+                        (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
+                        (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
+                        echo "🚫 Esta rama (${branch}) no corresponde al job ${env.JOB_NAME}. Deteniendo ejecución."
+                        currentBuild.result = 'NOT_BUILT'
+                        error("Build cancelado por protección de ambiente")
+                    }
+
+                    // Seteo del tag
+                    def tag = (branch == 'main') ? 'latest' : branch
                     env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
-                    echo "Construyendo imagen con tag: ${env.IMAGE_TAG}"
+                    echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
+
+                    // Checkout del repo
+                    checkout scm
                 }
             }
         }
@@ -34,6 +52,15 @@ pipeline {
                         docker push $IMAGE_TAG
                     '''
                 }
+            }
+        }
+
+        stage('Notificar a Render (CD)') {
+            when {
+                expression { env.JOB_NAME == 'ci-prod' }
+            }
+            steps {
+                sh 'curl -X POST https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=_lf-I7QNmlk'
             }
         }
     }

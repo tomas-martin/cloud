@@ -14,7 +14,7 @@ pipeline {
         stage('Validar rama') {
             steps {
                 script {
-                    def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
+                    def branch = env.BRANCH_NAME ?: 'dev'
 
                     // Validación por job y rama
                     if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||

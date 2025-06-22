@@ -13,16 +13,13 @@ pipeline {
     stages {
         stage('Validar rama') {
             steps {
+                checkout scm
                 script {
-                    def branch = env.BRANCH_NAME ?: 'dev'
-                    
-                    // DEBUG: imprimir lo que Jenkins cree
-                    echo "🔍 DEBUG:"
-                    echo "  JOB_NAME = ${env.JOB_NAME}"
-                    echo "  GIT_BRANCH = ${env.GIT_BRANCH}"
-                    echo "  BRANCH_NAME = ${env.BRANCH_NAME}"
-                    
-                    // Validación por job y rama
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+
+                    echo "🔍 DEBUG: Rama Git detectada = ${branch}"
+                    echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
+
                     if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
                         (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
                         (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
@@ -31,13 +28,9 @@ pipeline {
                         error("Build cancelado por protección de ambiente")
                     }
 
-                    // Tag según rama
                     def tag = (branch == 'main') ? 'latest' : branch
                     env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
                     echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
-
-                    // Checkout del código
-                    checkout scm
                 }
             }
         }
@@ -66,7 +59,7 @@ pipeline {
                 expression { env.JOB_NAME == 'ci-prod' }
             }
             steps {
-                sh 'curl -X POST https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=_lf-I7QNmlk'
+                sh 'curl -X POST https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
             }
         }
     }

@@ -2,23 +2,25 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'tomasmartin7/veterinaria-backend:latest'
+        IMAGE_BASE = 'tomasmartin7/veterinaria-backend'
         DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
     stages {
-        stage('Clonar repo') {
+        stage('Detectar rama y tag') {
             steps {
-                checkout scm
+                script {
+                    def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
+                    def tag = branch == 'main' ? 'latest' : branch
+                    env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
+                    echo "Construyendo imagen con tag: ${env.IMAGE_TAG}"
+                }
             }
         }
 
         stage('Build Docker') {
             steps {
-                script {
-                    // Actualiza esta línea para especificar la ruta al Dockerfile dentro de la carpeta 'backend'
-                    docker.build(DOCKER_IMAGE, 'backend')
-                }
+                sh "docker build -t $IMAGE_TAG ."
             }
         }
 
@@ -27,10 +29,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID,
                                                  usernameVariable: 'DOCKER_USER',
                                                  passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
+                    sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $DOCKER_IMAGE
-                    """
+                        docker push $IMAGE_TAG
+                    '''
                 }
             }
         }

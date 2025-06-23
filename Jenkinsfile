@@ -15,10 +15,11 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    // Manejo robusto de rama actual incluso en detached HEAD
-                    def gitBranch = sh(script: "git symbolic-ref --short HEAD || git name-rev --name-only HEAD", returnStdout: true).trim()
+                    def rawBranch = sh(script: "git symbolic-ref --short HEAD || git name-rev --name-only HEAD", returnStdout: true).trim()
+                    def gitBranch = rawBranch.tokenize('/').last()
 
-                    echo "🔍 DEBUG: Rama Git detectada = ${gitBranch}"
+                    echo "🔍 DEBUG: Rama Git detectada (raw) = ${rawBranch}"
+                    echo "🔍 DEBUG: Rama Git detectada (limpia) = ${gitBranch}"
                     echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
 
                     if ((env.JOB_NAME == 'ci-dev' && gitBranch != 'dev') ||

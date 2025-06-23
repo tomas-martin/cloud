@@ -15,7 +15,7 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    def branch = env.BUILD_BRANCH ?: 'dev'
+                    def branch = env.BRANCH_NAME
 
                     echo "🔍 DEBUG: Rama Git detectada = ${branch}"
                     echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
@@ -57,17 +57,21 @@ pipeline {
         stage('Notificar a Render (CD)') {
             when {
                 anyOf {
-                    expression { env.JOB_NAME == 'ci-prod' }
+                    expression { env.JOB_NAME == 'ci-dev' }
                     expression { env.JOB_NAME == 'ci-staging' }
+                    expression { env.JOB_NAME == 'ci-prod' }
                 }
             }
             steps {
                 script {
                     def renderWebhook = ''
-                    if (env.JOB_NAME == 'ci-prod') {
-                        renderWebhook = 'https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
+
+                    if (env.JOB_NAME == 'ci-dev') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1ccfjp5pdvs73en0nfg?key=4XaFhIxM3Uw'
                     } else if (env.JOB_NAME == 'ci-staging') {
                         renderWebhook = 'https://api.render.com/deploy/srv-d1cchq95pdvs73en2ljg?key=3haytWrwBuo'
+                    } else if (env.JOB_NAME == 'ci-prod') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
                     }
 
                     echo "🚀 Notificando a Render: ${renderWebhook}"

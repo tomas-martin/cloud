@@ -506,13 +506,7 @@
             if (telefono.length !== 10) {
                 mostrarError(input, error, 'El teléfono debe tener exactamente 10 dígitos');
                 return false;
-            }
-            
-            if (!telefono.startsWith('09')) {
-                mostrarError(input, error, 'El teléfono debe empezar con 09');
-                return false;
-            }
-            
+            }       
             ocultarError(input, error);
             return true;
         }

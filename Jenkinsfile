@@ -6,14 +6,31 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
-        stage('Detectar rama y tag') {
+        stage('Validar rama') {
             steps {
+                checkout scm
                 script {
-                    def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
-                    def tag = branch == 'main' ? 'latest' : branch
+                    def branch = env.BUILD_BRANCH ?: 'dev'
+
+                    echo "🔍 DEBUG: Rama Git detectada = ${branch}"
+                    echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
+
+                    if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
+                        (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
+                        (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
+                        echo "🚫 Esta rama (${branch}) no corresponde al job ${env.JOB_NAME}. Deteniendo ejecución."
+                        currentBuild.result = 'NOT_BUILT'
+                        error("Build cancelado por protección de ambiente")
+                    }
+
+                    def tag = (branch == 'main') ? 'latest' : branch
                     env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
-                    echo "Construyendo imagen con tag: ${env.IMAGE_TAG}"
+                    echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
                 }
             }
         }
@@ -33,6 +50,28 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $IMAGE_TAG
                     '''
+                }
+            }
+        }
+
+        stage('Notificar a Render (CD)') {
+            when {
+                anyOf {
+                    expression { env.JOB_NAME == 'ci-prod' }
+                    expression { env.JOB_NAME == 'ci-staging' }
+                }
+            }
+            steps {
+                script {
+                    def renderWebhook = ''
+                    if (env.JOB_NAME == 'ci-prod') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
+                    } else if (env.JOB_NAME == 'ci-staging') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1cchq95pdvs73en2ljg?key=3haytWrwBuo'
+                    }
+
+                    echo "🚀 Notificando a Render: ${renderWebhook}"
+                    sh "curl -X POST ${renderWebhook}"
                 }
             }
         }

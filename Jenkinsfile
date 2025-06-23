@@ -15,22 +15,23 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    // Manejo robusto de rama actual incluso en detached HEAD
+                    def gitBranch = sh(script: "git symbolic-ref --short HEAD || git name-rev --name-only HEAD", returnStdout: true).trim()
 
-                    echo "🔍 DEBUG: Rama Git detectada = ${branch}"
+                    echo "🔍 DEBUG: Rama Git detectada = ${gitBranch}"
                     echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
 
-                    if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
-                        (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
-                        (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
-                        echo "🚫 Esta rama (${branch}) no corresponde al job ${env.JOB_NAME}. Deteniendo ejecución."
+                    if ((env.JOB_NAME == 'ci-dev' && gitBranch != 'dev') ||
+                        (env.JOB_NAME == 'ci-staging' && gitBranch != 'staging') ||
+                        (env.JOB_NAME == 'ci-prod' && gitBranch != 'main')) {
+                        echo "🚫 Esta rama (${gitBranch}) no corresponde al job ${env.JOB_NAME}. Deteniendo ejecución."
                         currentBuild.result = 'NOT_BUILT'
                         error("Build cancelado por protección de ambiente")
                     }
 
-                    def tag = (branch == 'main') ? 'latest' : branch
+                    def tag = (gitBranch == 'main') ? 'latest' : gitBranch
                     env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
-                    echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
+                    echo "✅ Rama válida: ${gitBranch}. Tag a usar: ${env.IMAGE_TAG}"
                 }
             }
         }

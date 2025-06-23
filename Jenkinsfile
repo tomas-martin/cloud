@@ -13,10 +13,13 @@ pipeline {
     stages {
         stage('Validar rama') {
             steps {
+                checkout scm
                 script {
-                    def branch = env.GIT_BRANCH?.replace('origin/', '') ?: 'dev'
+                    def branch = env.BRANCH_NAME
 
-                    // Cortar la ejecución si la rama no coincide con el job
+                    echo "🔍 DEBUG: Rama Git detectada = ${branch}"
+                    echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
+
                     if ((env.JOB_NAME == 'ci-dev' && branch != 'dev') ||
                         (env.JOB_NAME == 'ci-staging' && branch != 'staging') ||
                         (env.JOB_NAME == 'ci-prod' && branch != 'main')) {
@@ -25,12 +28,9 @@ pipeline {
                         error("Build cancelado por protección de ambiente")
                     }
 
-                    // Si coincide, setear el tag
-                    env.IMAGE_TAG = "${IMAGE_BASE}:${branch == 'main' ? 'latest' : branch}"
+                    def tag = (branch == 'main') ? 'latest' : branch
+                    env.IMAGE_TAG = "${IMAGE_BASE}:${tag}"
                     echo "✅ Rama válida: ${branch}. Tag a usar: ${env.IMAGE_TAG}"
-
-                    // Hacemos el checkout
-                    checkout scm
                 }
             }
         }
@@ -50,6 +50,32 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $IMAGE_TAG
                     '''
+                }
+            }
+        }
+
+        stage('Notificar a Render (CD)') {
+            when {
+                anyOf {
+                    expression { env.JOB_NAME == 'ci-dev' }
+                    expression { env.JOB_NAME == 'ci-staging' }
+                    expression { env.JOB_NAME == 'ci-prod' }
+                }
+            }
+            steps {
+                script {
+                    def renderWebhook = ''
+
+                    if (env.JOB_NAME == 'ci-dev') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1ccfjp5pdvs73en0nfg?key=4XaFhIxM3Uw'
+                    } else if (env.JOB_NAME == 'ci-staging') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1cchq95pdvs73en2ljg?key=3haytWrwBuo'
+                    } else if (env.JOB_NAME == 'ci-prod') {
+                        renderWebhook = 'https://api.render.com/deploy/srv-d1a17fumcj7s73f24n40?key=DPabSeHE7e4'
+                    }
+
+                    echo "🚀 Notificando a Render: ${renderWebhook}"
+                    sh "curl -X POST ${renderWebhook}"
                 }
             }
         }

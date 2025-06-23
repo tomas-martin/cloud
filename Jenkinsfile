@@ -15,7 +15,7 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    def branch = env.BRANCH_NAME
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
 
                     echo "🔍 DEBUG: Rama Git detectada = ${branch}"
                     echo "🔍 DEBUG: JOB_NAME = ${env.JOB_NAME}"
